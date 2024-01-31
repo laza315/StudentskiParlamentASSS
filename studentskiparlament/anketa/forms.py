@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from .models import Anketa
+from .models import Anketa, BackUpKod
 
 # class LoginForm(AuthenticationForm):
 #     class Meta:
@@ -30,8 +30,12 @@ class AnketaForm(ModelForm):
         }
         widgets = {
             'naziv': forms.TextInput(attrs={'class': 'form-control'}),
-            'opis_ankete': forms.TextInput(attrs={'class': 'form-control'}),
+            'opis_ankete': forms.Textarea(attrs={'class': 'form-control'}),
             'broj_kodova': forms.NumberInput(attrs={'class': 'form-control', 'min': 1})
         }
         
-
+class BackupCodesForm(ModelForm):
+    class Meta:
+        model = BackUpKod
+        fields = ['code_value', 'anketa']
+        

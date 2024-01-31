@@ -1,1 +1,13 @@
-<h1>Email sent!</h2>
+{% extends 'anketa/hostnavbar.html' %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}

@@ -12,12 +12,13 @@
   {% if user.is_authenticated %}
       <div class="container mt-5">
         <div class="row justify-content-center">
-          <div class="col-md-7">
+          <div class="col-md-5">
             <div class="card">
               <div class="card-body">
                 <h1 class="text-center">Dobrodosao, {{user.first_name}} !</h1>
-                
-                <a class="btn btn-primary btn-block" id='napravianketu' href="{% url 'hostmakesanketa' %}">Napravi Anketu!</a>
+                <div class="text-center"> <!-- Center the button within this div -->
+                  <a class="btn btn-primary btn-block" id='napravianketu' href="{% url 'hostmakesanketa' %}">Napravi Anketu!</a>
+                </div>
               </div>
             </div>
           </div>
@@ -25,18 +26,33 @@
       </div>
       <div class="form-container">
         <div class="col-md-12">
-          <form method="post" action="{% url 'passwordchange' %}">
+          <form method="post" action="{% url 'passwordchange' %}" class="collapsed-form" id="passwordForm">
             <h2><i class="fa-solid fa-user fa-lg"></i> Change Password Here</h2>
             <h5>
               U slucaju da zelite da promenite sifru, nastavite na sledecu formu
             </h5>
             {% csrf_token %} {{ form.as_p }}
             <button class="btn btn-primary btn-block" type="submit">Nastavi!</button>
-            <a href="{% url 'profile' %}" class="btn btn-primary btn-block">Cancel</a>
+            <a href="{% url 'profile' %}" class="btn btn-secondary btn-block" id="cancelButton" style="display">Cancel</a>
           </form>
         </div>
       </div>
     </div>
-  {% endif %} 
+
+    {% endif %} 
 {% endblock %}
+
+    {% comment %} <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          var form = document.getElementById('passwordForm');
+          var cancelButton = document.getElementById('cancelButton');
+          var expandButton = document.getElementById('napravianketu');
+
+          expandButton.addEventListener('click', function () {
+              form.classList.remove('collapsed-form');
+              form.classList.add('expanded-form');
+              cancelButton.style.display = 'inline-block';
+          });
+      });
+    </script> {% endcomment %}
 

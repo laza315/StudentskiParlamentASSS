@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .forms import AnketaForm
+from .forms import AnketaForm, BackupCodesForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
@@ -14,6 +14,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.core.mail import send_mail
 from .code_generator import CodeGenerator
+from . models import BackUpKod
 
 #Create your views here.
 
@@ -58,13 +59,13 @@ def host_makes_anketa(request):
     return render(request, 'anketa/anketa.html', context)
 
 @login_required
-def mail_bkcodes_sender(request, number_of_codes, anketa_id):
+def mail_bkcodes_sender(request, number_of_codes, anketa):
     user = request.user
     email_recepient = user.email
     # print(email_recepient)
     send_mail (
         subject='Hej, ovo je Akademija',
-        message= f"Postovani, U prilogu se nalazi lista back_up kodova za Vase studente za anketu pod brojem {anketa_id} : \n".join(number_of_codes),
+        message= f"kodovi za Vase studente za anketu pod brojem {anketa} : \n".join(number_of_codes),
         from_email='studentskiparlament.asss@gmail.com',
         recipient_list=[email_recepient],
         fail_silently=False
@@ -72,7 +73,12 @@ def mail_bkcodes_sender(request, number_of_codes, anketa_id):
     return render(request, 'anketa/email.html')
 
 def success_mail(request):
-    return render(request, 'anketa/email.html')
+    user = request.user
+    email_recepient = user.email
+    alert_poruka = messages.success(request, f'Sifre za anketu su poslate na vasu {email_recepient} e-mail adresu.')
+    return render(request, 'anketa/email.html', context={
+        'alert_poruka': alert_poruka
+    })
 
 
 
