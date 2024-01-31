@@ -1,0 +1,32 @@
+{% extends "anketa/hostnavbar.html" %}
+
+{% block title %} Anketa {% endblock %} 
+
+{% block additional_login_out %}
+    <a class="topright" id="login-out" href="{% url 'hostlogout' %}"
+      ><i class="fa-solid fa-user"></i> Odjavi se
+    </a>
+{% endblock %} 
+
+{% block content %}
+    {% if user.is_authenticated %}
+       <div class="container mt-5">
+          <div class="row justify-content-center">
+           <div class="col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h1 class="card-title text-center"> <i class="fa-solid fa-hand"></i> Kreirajte Anketu {{user.first_name}}</h1>
+                <form method="post" action="{% url 'hostmakesanketa' %}">
+                  {% csrf_token %}
+                  {{ form.as_p }}
+                  <button type="submit" class="btn btn-primary">Nastavi</button>
+                  <a href="{% url 'profile' %}" class="btn btn-primary btn-block">Cancel</a>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> 
+    {% endif %}
+
+{% endblock %}

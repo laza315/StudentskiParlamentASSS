@@ -1,0 +1,42 @@
+{% extends "anketa/hostnavbar.html" %} 
+
+{% block title %} User {% endblock %} 
+
+{% block additional_login_out %}
+    <a class="topright" id="login-out" href="{% url 'hostlogout' %}"
+      ><i class="fa-solid fa-user"></i> Odjavi se
+    </a>
+{% endblock %} 
+
+{% block content %} 
+  {% if user.is_authenticated %}
+      <div class="container mt-5">
+        <div class="row justify-content-center">
+          <div class="col-md-7">
+            <div class="card">
+              <div class="card-body">
+                <h1 class="text-center">Dobrodosao, {{user.first_name}} !</h1>
+                
+                <a class="btn btn-primary btn-block" id='napravianketu' href="{% url 'hostmakesanketa' %}">Napravi Anketu!</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-container">
+        <div class="col-md-12">
+          <form method="post" action="{% url 'passwordchange' %}">
+            <h2><i class="fa-solid fa-user fa-lg"></i> Change Password Here</h2>
+            <h5>
+              U slucaju da zelite da promenite sifru, nastavite na sledecu formu
+            </h5>
+            {% csrf_token %} {{ form.as_p }}
+            <button class="btn btn-primary btn-block" type="submit">Nastavi!</button>
+            <a href="{% url 'profile' %}" class="btn btn-primary btn-block">Cancel</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endif %} 
+{% endblock %}
+

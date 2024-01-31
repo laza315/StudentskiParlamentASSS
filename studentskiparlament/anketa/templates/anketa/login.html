@@ -1,0 +1,17 @@
+{% extends 'anketa/hostnavbar.html' %}
+
+{% block title %} Log in {% endblock %}
+
+{% block content %}
+<body>
+        <div class="form-container">
+                <form method="post" action="{% url 'hostlogin' %}">
+                <h2><i class="fa-solid fa-user fa-lg"></i>  Login Here</h2>
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                <button class="center" type="submit" id="loginbtn" value="Login">Login</button>
+                </form>
+        </div>
+</body>
+
+{% endblock %}
