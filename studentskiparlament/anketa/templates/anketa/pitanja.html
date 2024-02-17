@@ -1,0 +1,52 @@
+{% extends 'anketa/hostnavbar.html' %}
+
+{% block title %} Pitanja {% endblock %} 
+
+
+{% block additional_login_out %}
+    <a class="topright" id="login-out" href="{% url 'hostlogout' %}"
+      ><i class="fa-solid fa-user"></i> Odjavi se
+    </a>
+{% endblock %} 
+
+{% block content %}
+  <center>
+  <h1 class="card-title text-center"> <i class="fa-solid fa-hand"></i> Kreirajte Pitanja {{user.first_name}}</h1>
+    {% for form in pitanja_forms %}
+      <div class="card text-white bg-info mb-3" style="max-width: 60rem;">
+        <div class="card-body">
+          <form method="post" action="{% url 'pitanja' anketa.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {% for profesor in data_profesori %}
+              {{ profesor.ime }} {{ profesor.prezime}} <br>
+              {{ profesor.smer__naziv_smera }} {{profesor.godina}}
+            {% endfor %}
+
+
+            {% for predmet in data_predmeti %}
+              {{ predmet.naziv_predmeta }} {{ predmet.smer__naziv_smera}} 
+              {{predmet.godina}} <br>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="{% url 'hostmakesanketa' %}" class="btn btn-primary btn-block">Cancel</a> 
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+</center>
+{% endblock %}
+
+
+
+
+{% for profesor in data_profesori %}
+   {{ profesor.ime }} {{ profesor.prezime}} <br>
+   {{ profesor.smer__naziv_smera }} {{profesor.godina}}
+{% endfor %}
+
+
+{% for predmet in data_predmeti %}
+   {{ predmet.naziv_predmeta }} {{ predmet.smer__naziv_smera}} 
+   {{predmet.godina}} <br>
+{% endfor %}

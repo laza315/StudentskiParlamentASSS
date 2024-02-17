@@ -2,57 +2,79 @@
 
 {% block title %} User {% endblock %} 
 
+{% block home %} 
+     <a class="nav-link active" href="{% url 'hosthomepage' %}">Почетна
+        <span class="visually-hidden">(current)</span>
+      </a>
+{% endblock %}
+
+{% block user_profile %}
+    <a class="nav-link active" href="{% url 'mojeankete' request.user.id %}">
+      <i class="fa-solid fa-user"></i> Моје Анкете
+      <span class="visually-hidden">(current)</span>
+    </a>
+{% endblock %}
+
 {% block additional_login_out %}
     <a class="topright" id="login-out" href="{% url 'hostlogout' %}"
-      ><i class="fa-solid fa-user"></i> Odjavi se
+      ><i class="fa-solid fa-user"></i> Одјави сe
     </a>
 {% endblock %} 
 
 {% block content %} 
-  {% if user.is_authenticated %}
-      <div class="container mt-5">
-        <div class="row justify-content-center">
-          <div class="col-md-5">
-            <div class="card">
-              <div class="card-body">
-                <h1 class="text-center">Dobrodosao, {{user.first_name}} !</h1>
-                <div class="text-center"> <!-- Center the button within this div -->
-                  <a class="btn btn-primary btn-block" id='napravianketu' href="{% url 'hostmakesanketa' %}">Napravi Anketu!</a>
-                </div>
-              </div>
+<div class='row justify-content-center'>
+  <div class='row'>
+    <div class="col"> <!-- Prva kolona sa instrukcijama -->
+        <div class="card text-white bg-info mb-3" id="anketaguideinfo" style="max-width: 40rem;">
+            <div class="card-header">Инструкције</div>
+            <div class="card-body">
+                <h4 class="card-title">Инфо</h4>
+                <p class="card-text"> 
+                    <div class="instruction-point"> <strong>*</strong> <strong>Назив</strong> - Име Анкете које ће студентима олакшати навигацију у самом сналажењу међу гомилом других анкета за које нису овлашћени да оцењују. Стога, молимо вас да буде адекватно попуњено како би нам то послужило управо приликом слања улазних тајних кодова за гласање о чијој ћемо сврси говорити у наставку. <br> </div>
+                    <div class="instruction-point"> <strong>*</strong> <strong>Смер</strong> - Илити, Студијски програм за који је Ваша Анкета намењена. У понуди су 3 смера: Информатика, Привредно Инжењерство и Друмски Саобраћај. Могуће је изабрати само један смер по Анкети. <br> </div>
+                    <div class="instruction-point"> <strong>*</strong> <strong>Тип Анкете </strong> - Премда Анкета може обрађивати само једну тему, тип анкете нам указује о чему ће та анкета бити, о нашим цењеним Професорима или о тренутно доступним Предметима једне академске године. Могуће је изабрати само један тип Анкете. <br> </div>
+                    <div class="instruction-point"> <strong>*</strong> <strong>Година </strong> - Овај параметар је важан како бисмо специфицирали за коју ће се годину горе два наведена поља односити. Прву, другу или трећу. <br> </div>
+                    <div class="instruction-point"> <strong>*</strong> <strong> Број Кодова </strong> - Је еквивалентан броју студената којима је намењена Ваша анкета. Максималан број студената је 100. По уносу броја студената приликом креирања, на Вашу емаил адресу добијате број тајних кодова које ћете по слободној вољи и начину, поделити студентима. Код је могуће искористити само једанпут и само за Анкета коју управо правите. <br> </div>
+                    <div class="instruction-point"> <strong>*</strong> <strong> Време истека </strong> - Обавезно поље до када је Анкета у слободној продукцији, односно до када ће студенти моћи гласати. По истеку времена, анкета је немогуће приступити и гласови се формирају од онолико студената колико је гласало до тад. <br> </div>
+                    <div class="instruction-point"> <strong>*</strong> <strong> Опис </strong> - Слободна форма захваљујући којој можете студентима јасније приближити вашу анкету и шта се од њих очекује. <br> </div>
+                </p>
             </div>
-          </div>
         </div>
-      </div>
-      <div class="form-container">
-        <div class="col-md-12">
-          <form method="post" action="{% url 'passwordchange' %}" class="collapsed-form" id="passwordForm">
-            <h2><i class="fa-solid fa-user fa-lg"></i> Change Password Here</h2>
-            <h5>
-              U slucaju da zelite da promenite sifru, nastavite na sledecu formu
-            </h5>
-            {% csrf_token %} {{ form.as_p }}
-            <button class="btn btn-primary btn-block" type="submit">Nastavi!</button>
-            <a href="{% url 'profile' %}" class="btn btn-secondary btn-block" id="cancelButton" style="display">Cancel</a>
-          </form>
-        </div>
-      </div>
     </div>
-
-    {% endif %} 
+    <div class="col"> 
+        {% if user.is_authenticated %}
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <div class="card">
+                            <div class="card-body">
+                                <h1 class="text-center">Добродошао, {{user.first_name}} !</h1>
+                                <div class="text-center">
+                                    <a class="btn btn-primary btn-block" id='napravianketu' href="{% url 'hostmakesanketa' %}">Направи Анкету!</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-container">
+                <div class="col-md-12">
+                    <form method="post" action="{% url 'passwordchange' %}" class="collapsed-form" id="passwordForm">
+                        <h2 class="text-center"><i class="fa-solid fa-user fa-lg"></i> Промените Шифру </h2>
+                        <h5 class="text-center" id='savet-za-promenu'>
+                            Саветујемо да промените Вашу, унапред генерисану шифру. Хвала. У супротном, сасвим је у реду да останете при тренутној.
+                        </h5>
+                        {% csrf_token %} {{ form.as_p }}
+                        <button class="btn btn-primary btn-block" id="promenisifru" type="submit">Настави!</button>
+                        <a href="{% url 'profile' %}" class="btn btn-secondary btn-block" id="cancelButton" style="display">Одустани</a>
+                    </form>
+                </div>
+            </div>
+        {% endif %}  
+    </div>
+    <div class='col'> <!-- Treća kolona -->
+        3 of 3
+    </div>
+  </div>
+</div>
 {% endblock %}
-
-    {% comment %} <script>
-      document.addEventListener('DOMContentLoaded', function () {
-          var form = document.getElementById('passwordForm');
-          var cancelButton = document.getElementById('cancelButton');
-          var expandButton = document.getElementById('napravianketu');
-
-          expandButton.addEventListener('click', function () {
-              form.classList.remove('collapsed-form');
-              form.classList.add('expanded-form');
-              cancelButton.style.display = 'inline-block';
-          });
-      });
-    </script> {% endcomment %}
-

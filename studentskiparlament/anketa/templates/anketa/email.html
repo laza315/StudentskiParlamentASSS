@@ -1,5 +1,12 @@
 {% extends 'anketa/hostnavbar.html' %}
 
+
+{% block additional_login_out %}
+    <a class="topright" id="login-out" href="{% url 'hostlogout' %}">
+      <i class="fa-solid fa-user"></i> Odjavi se
+    </a>
+{% endblock %} 
+
 {% block content %}
 
 {% if messages %}

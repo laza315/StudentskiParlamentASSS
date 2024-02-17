@@ -2,6 +2,18 @@
 
 {% block title %} Anketa {% endblock %} 
 
+{% comment %} {% block home %} 
+     <a class="nav-link active" href="{% url 'hosthomepage' %}">Home
+        <span class="visually-hidden">(current)</span>
+      </a>
+{% endblock %} {% endcomment %}
+{% block user_profile %}
+    <a class="nav-link active" href="{% url 'mojeankete' request.user.id %}">
+      <i class="fa-solid fa-user"></i> Moje Ankete
+      <span class="visually-hidden">(current)</span>
+    </a>
+{% endblock %}
+
 {% block additional_login_out %}
     <a class="topright" id="login-out" href="{% url 'hostlogout' %}"
       ><i class="fa-solid fa-user"></i> Odjavi se

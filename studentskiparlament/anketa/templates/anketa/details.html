@@ -1,0 +1,40 @@
+{% extends 'anketa/hostnavbar.html' %}
+
+{% block title %} Details {% endblock %} 
+
+
+{% block additional_login_out %}
+    <a class="topright" id="login-out" href="{% url 'hostlogout' %}"
+      ><i class="fa-solid fa-user"></i> Odjavi se
+    </a>
+{% endblock %} 
+
+{% block content %}
+<center>
+ <div class="card text-white bg-info mb-3" style="max-width: 50rem;" id='info-anketa-card'>
+    <div class="card-header" id='naziv-ankete'>
+        <strong><h2>{{ anketa_details.naziv }}</h2></strong>
+    </div>
+    <div class="card-body">
+      <h4 class="card-title"></h4>
+      <strong>Smer:</strong><p> {{ anketa_details.smer }}</p>
+      <strong>Anketa O:</strong><p> {{ anketa_details.get_tip_ankete_display }}ma</p>
+      <strong>Na:</strong><p> {{ anketa_details.godina }} <strong>godini</strong></p>
+      <strong>Namenjeno da oceni:</strong><p>: {{anketa_details.broj_kodova}} <strong>studenata:</strong></p>
+      <strong>Opis:</strong><p> {{ anketa_details.opis_ankete }}</p>
+      <strong>Objavljena:</strong><p>: {{ anketa_details.publish_date }}</p>
+      {% if anketna_pitanja %}
+      <strong><h4>Pitanja:</h4></strong>
+      <ul class='list-group'>
+            {% for pitanje in anketna_pitanja %}
+            </li><li class="list-group-item list-group-item-info d-flex justify-content-between align-items-center">
+                <p>{{pitanje.question_text}}</p>
+                <span class="badge bg-primary rounded-pill">{{pitanje.redni_broj}}</span>
+            </li>
+            {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</center>
+{% endblock %}

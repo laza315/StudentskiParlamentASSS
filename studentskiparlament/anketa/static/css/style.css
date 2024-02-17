@@ -46,10 +46,49 @@ label, input[type="submit"] {
     font-size: 18px;
     text-decoration: none;
 }
+.topleft {
+    position: absolute;
+    top: 19px;
+    right: 16px;
+    font-size: 18px;
+    text-decoration: none;
+    color: aliceblue;
+}
 
 #napravianketu {
-    
     display: center;
 }
 
+#promenisifru {
+    display: center;
+}
+
+#anketaguideinfo {
+    margin:auto;
+    border: 5px;
+    display: left;
+}
+.col {
+    height: 300px; /* Podešavanje visine kolona */
+    display: inline-block;
+    vertical-align: top;
+    width: 33.33%;
+    text-align: center;
+}
+.spacer {
+    width: 33.33%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+#naziv-ankete {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#savet-za-promenu {
+   display: inline-block;
+}
 
