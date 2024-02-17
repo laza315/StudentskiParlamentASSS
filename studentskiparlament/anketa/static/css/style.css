@@ -81,7 +81,7 @@ label, input[type="submit"] {
     vertical-align: top;
 }
 
-#naziv-ankete {
+/* #naziv-ankete {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -90,5 +90,5 @@ label, input[type="submit"] {
 
 #savet-za-promenu {
    display: inline-block;
-}
+} */
 
