@@ -1,0 +1,33 @@
+{% extends 'anketa/hostnavbar.html' %}
+
+{% block title %} Pregled {% endblock %} 
+
+
+{% block additional_login_out %}
+    <a class="topright" id="login-out" href="{% url 'hostlogout' %}"
+      ><i class="fa-solid fa-user"></i> Odjavi se
+    </a>
+{% endblock %} 
+
+{% block content %}
+
+ <center>
+   <div class="card border-light mb-3" style="max-width: 40rem;">
+      <div class="card-header">Pregled</div>
+      <div class="card-body">
+         {% if data_pitanje %}
+            {% for profesor in data_profesori %}
+               <h3>Text Pitanja: {{data_pitanje}} </h3>
+               <p> Ime {{ profesor.ime }} </p> <p> Prezime: {{profesor.prezime}}</p> <p> Smer: {{ profesor.smer__naziv_smera}} </p>
+               <p>Godina {{profesor.godina}} </p> <br>
+            {% endfor %}
+            {% for predmet in data_predmeti %}
+               <h3>Text Pitanja: {{data_pitanje}}</h3>
+               <p> Naziv predmeta {{ predmet.naziv_predmeta }} </p> <p> Smer: {{ predmet.smer__naziv_smera}} </p>
+               <p>Godina {{predmet.godina}} </p> <br>
+            {% endfor %}
+         {% endif %}
+      </div>
+   </div>      
+ </center>
+{% endblock %}

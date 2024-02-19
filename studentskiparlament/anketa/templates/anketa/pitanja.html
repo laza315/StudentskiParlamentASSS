@@ -18,16 +18,6 @@
           <form method="post" action="{% url 'pitanja' anketa.id %}">
             {% csrf_token %}
             {{ form.as_p }}
-            {% for profesor in data_profesori %}
-              {{ profesor.ime }} {{ profesor.prezime}} <br>
-              {{ profesor.smer__naziv_smera }} {{profesor.godina}}
-            {% endfor %}
-
-
-            {% for predmet in data_predmeti %}
-              {{ predmet.naziv_predmeta }} {{ predmet.smer__naziv_smera}} 
-              {{predmet.godina}} <br>
-            {% endfor %}
             <button type="submit" class="btn btn-primary">Submit</button>
             <a href="{% url 'hostmakesanketa' %}" class="btn btn-primary btn-block">Cancel</a> 
           </form>
@@ -37,16 +27,3 @@
 </center>
 {% endblock %}
 
-
-
-
-{% for profesor in data_profesori %}
-   {{ profesor.ime }} {{ profesor.prezime}} <br>
-   {{ profesor.smer__naziv_smera }} {{profesor.godina}}
-{% endfor %}
-
-
-{% for predmet in data_predmeti %}
-   {{ predmet.naziv_predmeta }} {{ predmet.smer__naziv_smera}} 
-   {{predmet.godina}} <br>
-{% endfor %}

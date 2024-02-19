@@ -3,6 +3,12 @@
 {% block title %} Details {% endblock %} 
 
 
+{% block home %} 
+     <a class="nav-link active" href="{% url 'hosthomepage' %}"> Почетна
+        <span class="visually-hidden">(current)</span>
+      </a>
+{% endblock %}
+
 {% block additional_login_out %}
     <a class="topright" id="login-out" href="{% url 'hostlogout' %}"
       ><i class="fa-solid fa-user"></i> Odjavi se

@@ -49,11 +49,11 @@ label, input[type="submit"] {
 .topleft {
     position: absolute;
     top: 19px;
-    right: 16px;
     font-size: 18px;
     text-decoration: none;
-    color: aliceblue;
+    color: purple;
 }
+
 
 #napravianketu {
     display: center;

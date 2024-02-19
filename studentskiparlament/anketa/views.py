@@ -18,6 +18,7 @@ from . models import BackUpKod, Anketa, Pitanja
 from topics.models import Smer, Profesori, Predmeti
 from django.utils.html import strip_tags
 from django.core.paginator import Paginator, Page
+import time
 
 
 
@@ -81,6 +82,8 @@ def host_makes_anketa(request):
                 codes = CodeGenerator.generate_codes()
                 mail_bkcodes_sender(request, codes, anketa)
                 messages.success(request, f'Anketa " {anketa.naziv} " o {anketa.get_tip_ankete_display()}ma,  za smer {anketa.smer} na {anketa.godina} godini , je uspesno kreirana!')
+                time.sleep(2)
+                #return redirect('email')
                 return redirect('pitanja', anketa_id=anketa.id)
             else:
                 messages.error(request, 'error ocured')
@@ -105,9 +108,11 @@ def definisanje_pitanja(request, anketa_id):
                 pitanje = form.save(commit=False)
                 pitanje.anketa = anketa
                 pitanje.save()
-                # query_za_izbor(request, anketa, pitanje)
+                time.sleep(2)
+                print(f'Kreirano je pitanje: {pitanje.id}')
 
-            return redirect('email') 
+            return redirect ('pregled_ankete', anketa_id=anketa.id, pitanje_id=pitanje.id)   
+            # make sure to return ('email') after you finish
     else:
         pitanja_forms = [PitanjaForm() for _ in range(br_pitanja)]
 
@@ -116,28 +121,42 @@ def definisanje_pitanja(request, anketa_id):
 
     
 @login_required(login_url='hostlogin')
-def query_za_izbor(request, anketa, pitanje): # + pitanje_id
-    pitanje = Pitanja.objects.get(anketa_id=anketa) #  tako da pitanje odgovara anketi u kojoj je pravljeno
-    print(pitanje.id)
-    smer_choice = anketa.smer
-    print(f'Korisnik je izabrao smer: {smer_choice}')
-    godina_choice = anketa.godina
-    print(f'Korisnik je izabrao godinu: {godina_choice}')
-    tip_ankete_choice = anketa.tip_ankete
-    print(f'Korisnik je za tip_ankete izabrao: {tip_ankete_choice}')
-
+def query_za_izbor(request, anketa_id, pitanje_id): 
+    pitanje_id = Pitanja.objects.get(anketa_id=anketa_id) #  tako da pitanje odgovara anketi u kojoj je pravljeno
+    print(pitanje_id.id)
+    anketa = get_object_or_404(Anketa, id=anketa_id)
+    print(f'Lets see which anketa_id did i got : {anketa.id}')
+    try:
+        smer_choice = anketa.smer
+        print(f'Korisnik je izabrao smer: {smer_choice}')
+        godina_choice = anketa.godina
+        print(f'Korisnik je izabrao godinu: {godina_choice}')
+        tip_ankete_choice = anketa.tip_ankete
+        print(f'Korisnik je za tip_ankete izabrao: {tip_ankete_choice}')
+    except:
+        raise ValueError(f'Something went wrong for anketa: {anketa_id}')
+    
+    data_pitanje = pitanje_id.question_text
+    print(data_pitanje)
+    
     if tip_ankete_choice == 1:
         print('Svi Profesori')
         data_profesori = Profesori.objects.filter(
             smer__naziv_smera=smer_choice,
             godina=godina_choice).values('ime', 'prezime', 'smer__naziv_smera', 'godina')
-        return render(request, 'anketa/pitanja.html', {'data_profesori': data_profesori })
+        return render(request, 'anketa/pregled_ankete.html', {
+            'data_profesori': data_profesori,
+            'data_pitanje': data_pitanje 
+            })
     elif tip_ankete_choice == 2:
         print('Svi Predmeti')
         data_predmeti = Predmeti.objects.filter(
             smer__naziv_smera=smer_choice,
             godina=godina_choice).values('naziv_predmeta', 'smer__naziv_smera', 'godina')
-        return render(request, 'anketa/pitanja.html', {'data_predmeti': data_predmeti })
+        return render(request, 'anketa/pregled_ankete.html', {
+            'data_predmeti': data_predmeti,
+            'data_pitanje': data_pitanje
+            })
     else:
         return HttpResponse('Nevalidan tip ankete')
     

@@ -3,7 +3,7 @@
 {% block title %} Log in {% endblock %}
 
 {% block home %} 
-     <a class="nav-link active" href="{% url 'hosthomepage' %}">Home
+     <a class="nav-link active" href="{% url 'hosthomepage' %}"> Почетна
         <span class="visually-hidden">(current)</span>
       </a>
 {% endblock %}
@@ -12,7 +12,7 @@
 <body>
         <div class="form-container">
                 <form method="post" action="{% url 'hostlogin' %}">
-                <h2><i class="fa-solid fa-user fa-lg"></i>  Login Here</h2>
+                <h2><i class="fa-solid fa-user fa-lg"></i>  Улогујте се </h2>
                         {% csrf_token %}
                         {{ form.as_p }}
                 <button class="center" type="submit" id="loginbtn" value="Login">Login</button>

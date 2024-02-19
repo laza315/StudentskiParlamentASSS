@@ -2,11 +2,13 @@
 
 {% block title %} Anketa {% endblock %} 
 
-{% comment %} {% block home %} 
-     <a class="nav-link active" href="{% url 'hosthomepage' %}">Home
+
+{% block home %} 
+     <a class="nav-link active" href="{% url 'hosthomepage' %}"> Почетна
         <span class="visually-hidden">(current)</span>
       </a>
-{% endblock %} {% endcomment %}
+{% endblock %}
+
 {% block user_profile %}
     <a class="nav-link active" href="{% url 'mojeankete' request.user.id %}">
       <i class="fa-solid fa-user"></i> Moje Ankete
