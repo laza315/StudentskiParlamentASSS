@@ -2,32 +2,47 @@
 
 {% block title %} Pregled {% endblock %} 
 
-
 {% block additional_login_out %}
-    <a class="topright" id="login-out" href="{% url 'hostlogout' %}"
-      ><i class="fa-solid fa-user"></i> Odjavi se
+    <a class="topright" id="login-out" href="{% url 'hostlogout' %}">
+        <i class="fa-solid fa-user"></i> Odjavi se
     </a>
 {% endblock %} 
 
 {% block content %}
-
- <center>
-   <div class="card border-light mb-3" style="max-width: 40rem;">
-      <div class="card-header">Pregled</div>
-      <div class="card-body">
-         {% if data_pitanje %}
-            {% for profesor in data_profesori %}
-               <h3>Text Pitanja: {{data_pitanje}} </h3>
-               <p> Ime {{ profesor.ime }} </p> <p> Prezime: {{profesor.prezime}}</p> <p> Smer: {{ profesor.smer__naziv_smera}} </p>
-               <p>Godina {{profesor.godina}} </p> <br>
-            {% endfor %}
-            {% for predmet in data_predmeti %}
-               <h3>Text Pitanja: {{data_pitanje}}</h3>
-               <p> Naziv predmeta {{ predmet.naziv_predmeta }} </p> <p> Smer: {{ predmet.smer__naziv_smera}} </p>
-               <p>Godina {{predmet.godina}} </p> <br>
-            {% endfor %}
-         {% endif %}
-      </div>
-   </div>      
- </center>
+<center>
+    <div class="card border-light mb-3" style="max-width: 40rem;">
+        <div class="card-header">Pregled</div>
+        <div class="card-body">
+            {% if data_pitanje %}
+                <h3>Text Pitanja: {{ data_pitanje }} </h3>
+                {% if data_profesori %}
+                    {% comment %} {% if votes %} {% endcomment %}
+                    <div class="list-container"style="text-align: left">
+                     <h4>Profesori:</h4> 
+                     {% comment %} <p>Nezadovoljan</p> <p>Onako</p> <p>Zadovoljan</p> <p>Odlicno</p> <p>Neizjasnjen</p> {% endcomment %}
+                     <ul class="list-group">
+                        {% for profesor in data_profesori %}
+                            {% comment %} {%for vote in votes %} {% endcomment %}
+                                <li class="list-group-item">{{ profesor.0 }} {{ profesor.1 }}</li>
+                                {% comment %} <p>{{vote}}</p> {% endcomment %}
+                            {% comment %} {% endfor %} {% endcomment %}
+                        {% endfor %}
+                     </ul>
+                    </div>
+                    {% comment %} {% endif %} {% endcomment %}
+            {% endif %}
+            {% if data_predmeti %}
+                    <div class="list-container" style="text-align: left">
+                        <h4>Predmeti:</h4>
+                        <ul class="list-group">
+                            {% for predmet in data_predmeti %}
+                                <li class="list-group-item">{{ predmet }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>      
+</center>
 {% endblock %}

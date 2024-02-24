@@ -45,8 +45,9 @@ class Anketa(models.Model):
         ordering = ['-publish_date']
 
     def __str__(self):
-        return f'Korisnik sa {self.host_id} id, je napravio anketu za {self.tip_ankete} pod Nazivom: {self.naziv} za {self.godina} godinu i za smer: {self.smer}. Anketu je namenjeno da oceni najvise {self.broj_kodova} studenta. Anketa se sastoji od {self.broj_pitanja} pitanja i bice aktivna do {self.vreme_do}. Opis: {self.opis_ankete}. Kreirana: u {self.publish_date}'
-
+        return f'Anketa:{self.id}. Korisnik sa {self.host_id} id, je napravio anketu o {self.get_tip_ankete_display()}ma pod Nazivom: {self.naziv} za {self.godina} godinu i za smer: {self.smer}. Anketu je namenjeno da oceni najvise {self.broj_kodova} studenta. Anketa se sastoji od {self.broj_pitanja} pitanja i bice aktivna do {self.vreme_do}. Opis: {self.opis_ankete}. Kreirana: u {self.publish_date}'
+    
+    
 class BackUpKod(models.Model):
 
     id = models.AutoField(primary_key=True)
@@ -78,16 +79,41 @@ class Pitanja(models.Model):
     question_text = models.CharField(max_length=255)
     redni_broj = models.PositiveIntegerField(default=1) 
 
-    def save(self, *args, **kwargs):
-        max_redni_broj = Pitanja.objects.filter(anketa=self.anketa).count() + 1
-        if max_redni_broj > 5:
-            raise ValidationError("Maximum number of questions exceeded.")
-        self.redni_broj = max_redni_broj
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     max_redni_broj = Pitanja.objects.filter(anketa=self.anketa).count() + 1
+    #     if max_redni_broj > 5:
+    #         raise ValidationError("Maximum number of questions exceeded.")
+    #     self.redni_broj = max_redni_broj
+    #     super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Pitanje: {self.question_text} sa ID:  {self.redni_broj} za anketu {self.anketa.id}"
+        return f"Pitanje: {self.question_text} sa ID:  {self.id} i redni broj {self.redni_broj} za anketu {self.anketa.id}"
+    
+    def save_choices_for_question(self, anketa, choices):
+        question = Pitanja.objects.get(anketa=anketa)
+        existing_choices = Izbori.objects.filter(question=question)
+        if not existing_choices.exists():
+            for choice in choices:
+                Izbori.objects.create(question=question, choice_text=choice)
+        else:
+            return
 
+
+class Izbori(models.Model):
+    
+    VOTE_CHOICES = (
+        (1, 'Nisam zadovoljan'),
+        (2, 'Onako'),
+        (3, 'Zadovoljan'),
+        (4, 'Odlično'),
+        (5, 'Uzdržan')
+    )
+    question =  models.ForeignKey(Pitanja, on_delete=models.CASCADE, null=False)
+    choice_text = models.CharField(max_length=255)
+    votes = models.IntegerField(choices=VOTE_CHOICES, default=3)
+
+    def __str__(self):
+        return self.choice_text
 
 
 

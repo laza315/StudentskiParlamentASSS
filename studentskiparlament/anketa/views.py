@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .forms import AnketaForm, BackupCodesForm, PitanjaForm
+from .forms import AnketaForm, PitanjaForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
@@ -11,18 +11,23 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.mail import send_mail
 from .code_generator import CodeGenerator
-from . models import BackUpKod, Anketa, Pitanja
+from . models import BackUpKod, Anketa, Pitanja, Izbori
 from topics.models import Smer, Profesori, Predmeti
 from django.utils.html import strip_tags
 from django.core.paginator import Paginator, Page
 import time
+from datetime import datetime
 
 
 
 #Create your views here.
+def landing_page(request):
+    return render(request, 'anketa/landing_page.html')
+
+
 @method_decorator(login_required(login_url='hostlogin'), name='dispatch')
 class PasswordsChange(PasswordChangeView):
     form_class = PasswordChangeForm
@@ -48,9 +53,11 @@ def user_surveys(request, pk):
 def survay_details(request, pk):
     anketa_details = Anketa.objects.get(id=pk)
     anketna_pitanja = Pitanja.objects.filter(anketa_id=anketa_details).all()
+    izbori = Izbori.objects.filter(question__in=anketna_pitanja)
     context = {
         'anketa_details': anketa_details,
-        'anketna_pitanja': anketna_pitanja
+        'anketna_pitanja': anketna_pitanja,
+        'izbori': izbori
     }
     return render(request, 'anketa/details.html', context)
 
@@ -102,7 +109,7 @@ def definisanje_pitanja(request, anketa_id):
     br_pitanja = anketa.broj_pitanja
 
     if request.method == 'POST':
-        pitanja_forms = [PitanjaForm(request.POST) for _ in range(br_pitanja)]
+        pitanja_forms = [PitanjaForm(request.POST) for _ in range(br_pitanja)] # mislim da je ovde problem sa cuvanjem, overlap texta dva pitanja
         if all(form.is_valid() for form in pitanja_forms):
             for form in pitanja_forms:
                 pitanje = form.save(commit=False)
@@ -110,6 +117,7 @@ def definisanje_pitanja(request, anketa_id):
                 pitanje.save()
                 time.sleep(2)
                 print(f'Kreirano je pitanje: {pitanje.id}')
+            
 
             return redirect ('pregled_ankete', anketa_id=anketa.id, pitanje_id=pitanje.id)   
             # make sure to return ('email') after you finish
@@ -122,10 +130,18 @@ def definisanje_pitanja(request, anketa_id):
     
 @login_required(login_url='hostlogin')
 def query_za_izbor(request, anketa_id, pitanje_id): 
-    pitanje_id = Pitanja.objects.get(anketa_id=anketa_id) #  tako da pitanje odgovara anketi u kojoj je pravljeno
-    print(pitanje_id.id)
-    anketa = get_object_or_404(Anketa, id=anketa_id)
-    print(f'Lets see which anketa_id did i got : {anketa.id}')
+    pitanje_id = Pitanja.objects.filter(anketa_id=anketa_id)
+    if pitanje_id.exists():
+        pitanje = pitanje_id.first()
+        print(pitanje.id)
+    else:
+        raise Http404('Pitanje ne postoji')
+
+    try:
+        anketa = get_object_or_404(Anketa, id=anketa_id)
+        print(f'Lets see which anketa_id did i got : {anketa.id}')
+    except Anketa.DoesNotExist:
+        raise Http404("Anketa doesn't exist")
     try:
         smer_choice = anketa.smer
         print(f'Korisnik je izabrao smer: {smer_choice}')
@@ -136,26 +152,31 @@ def query_za_izbor(request, anketa_id, pitanje_id):
     except:
         raise ValueError(f'Something went wrong for anketa: {anketa_id}')
     
-    data_pitanje = pitanje_id.question_text
-    print(data_pitanje)
+    # votes = IzboriForm(request.POST)
     
     if tip_ankete_choice == 1:
         print('Svi Profesori')
         data_profesori = Profesori.objects.filter(
             smer__naziv_smera=smer_choice,
-            godina=godina_choice).values('ime', 'prezime', 'smer__naziv_smera', 'godina')
+            godina=godina_choice).values_list('ime', 'prezime')
+        choices = [' '.join(row) for row in data_profesori]
+        choices_list = list(choices)
+        pitanje.save_choices_for_question(anketa, choices_list)
         return render(request, 'anketa/pregled_ankete.html', {
             'data_profesori': data_profesori,
-            'data_pitanje': data_pitanje 
+            'data_pitanje': pitanje.question_text,
+            # 'votes': votes
             })
     elif tip_ankete_choice == 2:
         print('Svi Predmeti')
         data_predmeti = Predmeti.objects.filter(
             smer__naziv_smera=smer_choice,
-            godina=godina_choice).values('naziv_predmeta', 'smer__naziv_smera', 'godina')
+            godina=godina_choice).values_list('naziv_predmeta', flat=True)
+        choices = list(data_predmeti)
+        pitanje.save_choices_for_question(anketa, choices)
         return render(request, 'anketa/pregled_ankete.html', {
             'data_predmeti': data_predmeti,
-            'data_pitanje': data_pitanje
+            'data_pitanje': pitanje.question_text
             })
     else:
         return HttpResponse('Nevalidan tip ankete')
@@ -195,4 +216,21 @@ def host_logout(request):
     logout(request)
     return redirect('hosthomepage')
 
+
+# def anketa_voting_activity(request, anketa_id):
+    
+#     anketa = get_object_or_404(Anketa, anketa_id=id)
+#     duration_time = anketa.vreme_do
+
+#     anketa_activity = True
+
+#     today_date = datetime.now()
+#     dt_string_frame = today_date.strftime("%d/%m/%Y %H:%M:%S")
+
+#     while anketa_activity:
+#         if duration_time < dt_string_frame:
+#             print("aktivna")
+#         else:
+#             anketa_activity = False
+#             raise anketa.DoesNotExist
 

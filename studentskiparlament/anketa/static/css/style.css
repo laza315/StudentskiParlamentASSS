@@ -92,3 +92,18 @@ label, input[type="submit"] {
    display: inline-block;
 } */
 
+/* Remove bullet points from the list */
+.list-group {
+    list-style: none;
+    padding-left: 0;
+}
+
+/* Add spacing between list items */
+.list-group-item {
+    margin-bottom: 5px; /* Adjust as needed */
+}
+
+.list-container {
+    text-align: left; /* Align the text to the left */
+}
+

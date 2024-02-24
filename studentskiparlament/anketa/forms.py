@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm, DateTimeInput
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from .models import Anketa, BackUpKod, Pitanja
+from .models import Anketa, BackUpKod, Pitanja, Izbori
 
 # class LoginForm(AuthenticationForm):
 #     class Meta:
@@ -58,5 +58,14 @@ class PitanjaForm(ModelForm):
             'question_text': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
+# class IzboriForm(ModelForm):
+#     izbori = forms.ChoiceField(choices=Izbori.VOTE_CHOICES)
+#     class Meta:
+#         model = Izbori
+#         fields = ['votes']
+#         labels = {
+#             'votes': 'Votes',
+#            }
+          
     
         

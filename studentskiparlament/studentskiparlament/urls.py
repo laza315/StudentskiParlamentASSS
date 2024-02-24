@@ -16,10 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from anketa import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('host_view/', include('anketa.urls')),
     path("accounts/", include("django.contrib.auth.urls")),
+    path('', views.landing_page, name='landing_page'),
+
 ]
 

@@ -18,6 +18,9 @@
           <form method="post" action="{% url 'pitanja' anketa.id %}">
             {% csrf_token %}
             {{ form.as_p }}
+            {% for field in form %}
+              {{ field.errors }}
+            {% endfor %}
             <button type="submit" class="btn btn-primary">Submit</button>
             <a href="{% url 'hostmakesanketa' %}" class="btn btn-primary btn-block">Cancel</a> 
           </form>
