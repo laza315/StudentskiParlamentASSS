@@ -139,7 +139,7 @@ LOGIN_REDIRECT_URL='profile'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-SESSION_EXPIRE_SECONDS = 120
+SESSION_EXPIRE_SECONDS = 600
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
 SESSION_TIMEOUT_REDIRECT = 'login/'
 SESSION_EXPIRE_AT_BROWSER_CLOSE=True

@@ -1,47 +1,74 @@
 {% extends 'anketa/hostnavbar.html' %}
 
-{% block title %} Pregled {% endblock %} 
+{% block title %} Преглед {% endblock %} 
 
 {% block additional_login_out %}
     <a class="topright" id="login-out" href="{% url 'hostlogout' %}">
-        <i class="fa-solid fa-user"></i> Odjavi se
+        <i class="fa-solid fa-user"></i> Одјави се
     </a>
 {% endblock %} 
 
 {% block content %}
 <center>
-    <div class="card border-light mb-3" style="max-width: 40rem;">
-        <div class="card-header">Pregled</div>
+    <div class="card border-light mb-3" style="max-width: 80rem;">
+        <div class="card-header">Преглед</div>
         <div class="card-body">
             {% if data_pitanje %}
-                <h3>Text Pitanja: {{ data_pitanje }} </h3>
+                <h3>Текст: {{ data_pitanje }} </h3>
                 {% if data_profesori %}
-                    {% comment %} {% if votes %} {% endcomment %}
-                    <div class="list-container"style="text-align: left">
-                     <h4>Profesori:</h4> 
-                     {% comment %} <p>Nezadovoljan</p> <p>Onako</p> <p>Zadovoljan</p> <p>Odlicno</p> <p>Neizjasnjen</p> {% endcomment %}
-                     <ul class="list-group">
-                        {% for profesor in data_profesori %}
-                            {% comment %} {%for vote in votes %} {% endcomment %}
-                                <li class="list-group-item">{{ profesor.0 }} {{ profesor.1 }}</li>
-                                {% comment %} <p>{{vote}}</p> {% endcomment %}
-                            {% comment %} {% endfor %} {% endcomment %}
-                        {% endfor %}
-                     </ul>
-                    </div>
-                    {% comment %} {% endif %} {% endcomment %}
-            {% endif %}
-            {% if data_predmeti %}
                     <div class="list-container" style="text-align: left">
-                        <h4>Predmeti:</h4>
+                       <div>
+                            <h4>Професори</h4> <label style="text-align: center;"> nisam задовољан  onako zadovoljan odlicno uzdrzan</label>
+                       </div> 
+                        {% for profesor in data_profesori %}
+                            <div style="margin-bottom: 10px;">
+                                <span style="display: inline-block;">{{ profesor.0 }} {{ profesor.1 }}</span>
+                                <span style="display: inline-block; margin-left: 10px;">
+                                    <input type="radio" id="choice1_{{ profesor.id }}" name="choice1_{{ profesor.id }}" value="1" style="vertical-align: middle;">
+                                </span>
+                                <span style="display: inline-block; margin-left: 10px;">
+                                    <input type="radio" id="choice2_{{ profesor.id }}" name="choice2_{{ profesor.id }}" value="2" style="vertical-align: middle;">
+                                </span>
+                                <span style="display: inline-block; margin-left: 10px;">
+                                    <input type="radio" id="choice3_{{ profesor.id }}" name="choice3_{{ profesor.id }}" value="3" style="vertical-align: middle;">
+                                </span>
+                                <span style="display: inline-block; margin-left: 10px;">
+                                    <input type="radio" id="choice4_{{ profesor.id }}" name="choice4_{{ profesor.id }}" value="4" style="vertical-align: middle;">
+                                </span>
+                                <span style="display: inline-block; margin-left: 10px;">
+                                    <input type="radio" id="choice5_{{ profesor.id }}" name="choice5_{{ profesor.id }}" value="5" style="vertical-align: middle;">
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if data_predmeti %}
+                    <div class="list-container" style="text-align: left">
+                        <h4>Предмети:</h4> <label style="text-align: center;"> nisam задовољан  onako zadovoljan odlicno uzdrzan</label>
                         <ul class="list-group">
                             {% for predmet in data_predmeti %}
-                                <li class="list-group-item">{{ predmet }}</li>
+                            <div style="margin-bottom: 10px; text-align: left">
+                                <li class="list-group-item">{{ predmet }}
+                                  <div style="text-align: center; margin-bottom: 1px">
+                                    <input type="radio" id="choice1_{{ profesor.id }}" name="choice_{{ profesor.id }}" value="1" style="vertical-align: middle;">
+                                    <input type="radio" id="choice1_{{ profesor.id }}" name="choice_{{ profesor.id }}" value="1" style="vertical-align: middle;">
+                                    <input type="radio" id="choice1_{{ profesor.id }}" name="choice_{{ profesor.id }}" value="1" style="vertical-align: middle;">
+                                    <input type="radio" id="choice1_{{ profesor.id }}" name="choice_{{ profesor.id }}" value="1" style="vertical-align: middle;">
+                                   <input type="radio" id="choice1_{{ profesor.id }}" name="choice_{{ profesor.id }}" value="1" style="vertical-align: middle;">
+                                  </div>
+                                </li>
+                            </div>
                             {% endfor %}
                         </ul>
                     </div>
                 {% endif %}
             {% endif %}
+            <form method="post" action="{% url 'pregled_ankete' anketa.id  pitanje.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="anketa_id" value="{{ anketa.id }}">
+                    <button class="btn btn-primary">Objavi</button>
+                    <a href="{% url 'profile' %}" class="btn btn-primary btn-block">Cancel</a>
+            </form>
         </div>
     </div>      
 </center>

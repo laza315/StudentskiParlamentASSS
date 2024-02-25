@@ -6,10 +6,10 @@
   {% if request.user.is_authenticated %}
       <a class="topright" id="login-out" href="{% url 'hostlogout' %}"
         ><i class="fa-solid fa-user"></i> Одјави сe
-      </a>   
-      {% block home %} 
-        <a class="nav-link active" href="{% url 'profile' %}"> Профил
-          <span class="visually-hidden">(current)</span>
+      </a>
+      {% block home %}
+        <a class="nav-link active topleft" id="1" href="{% url 'profile' %}"> Профил
+          <span class="visually-hidden">(current)</span> 
         </a>
       {% endblock %}
   {% else %}

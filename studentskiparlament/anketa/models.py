@@ -40,12 +40,13 @@ class Anketa(models.Model):
     vreme_do = models.DateTimeField(default=timezone.now)
     opis_ankete = models.TextField(null=True, blank=True)
     publish_date = models.DateTimeField(default=timezone.now)
+    aktivnost = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['-publish_date']
 
     def __str__(self):
-        return f'Anketa:{self.id}. Korisnik sa {self.host_id} id, je napravio anketu o {self.get_tip_ankete_display()}ma pod Nazivom: {self.naziv} za {self.godina} godinu i za smer: {self.smer}. Anketu je namenjeno da oceni najvise {self.broj_kodova} studenta. Anketa se sastoji od {self.broj_pitanja} pitanja i bice aktivna do {self.vreme_do}. Opis: {self.opis_ankete}. Kreirana: u {self.publish_date}'
+        return f'Anketa:{self.id}. Korisnik sa {self.host_id} id, je napravio anketu o {self.get_tip_ankete_display()}ma pod Nazivom: {self.naziv} za {self.godina} godinu i za smer: {self.smer}. Anketu je namenjeno da oceni najvise {self.broj_kodova} studenta. Anketa se sastoji od {self.broj_pitanja} pitanja i bice aktivna do {self.vreme_do}. Opis: {self.opis_ankete}. Kreirana: u {self.publish_date}. Aktivna = {self.aktivnost}.'
     
     
 class BackUpKod(models.Model):

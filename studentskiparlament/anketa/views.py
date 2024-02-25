@@ -6,7 +6,7 @@ from .forms import AnketaForm, PitanjaForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.views import PasswordChangeView
@@ -88,7 +88,7 @@ def host_makes_anketa(request):
 
                 codes = CodeGenerator.generate_codes()
                 mail_bkcodes_sender(request, codes, anketa)
-                messages.success(request, f'Anketa " {anketa.naziv} " o {anketa.get_tip_ankete_display()}ma,  za smer {anketa.smer} na {anketa.godina} godini , je uspesno kreirana!')
+                messages.success(request, f'Anketa " {anketa.naziv} " o {anketa.get_tip_ankete_display()}ma,  za smer {anketa.smer} na {anketa.godina} godini, je uspesno kreirana! Vasa Anketa je trenutno aktivna i bice dostupna do {anketa.vreme_do}.')
                 time.sleep(2)
                 #return redirect('email')
                 return redirect('pitanja', anketa_id=anketa.id)
@@ -152,8 +152,7 @@ def query_za_izbor(request, anketa_id, pitanje_id):
     except:
         raise ValueError(f'Something went wrong for anketa: {anketa_id}')
     
-    # votes = IzboriForm(request.POST)
-    
+    # TO DO - Razdvoj u posebne metode
     if tip_ankete_choice == 1:
         print('Svi Profesori')
         data_profesori = Profesori.objects.filter(
@@ -162,11 +161,18 @@ def query_za_izbor(request, anketa_id, pitanje_id):
         choices = [' '.join(row) for row in data_profesori]
         choices_list = list(choices)
         pitanje.save_choices_for_question(anketa, choices_list)
+
+        if request.method == 'POST':
+            host_release_anketa_in_etar(request, anketa.id)
+            return redirect('email')
+
         return render(request, 'anketa/pregled_ankete.html', {
             'data_profesori': data_profesori,
             'data_pitanje': pitanje.question_text,
-            # 'votes': votes
+            'anketa': anketa,
+            'pitanje': pitanje
             })
+    # TO DO - Razdvoj u posebne metode
     elif tip_ankete_choice == 2:
         print('Svi Predmeti')
         data_predmeti = Predmeti.objects.filter(
@@ -174,13 +180,27 @@ def query_za_izbor(request, anketa_id, pitanje_id):
             godina=godina_choice).values_list('naziv_predmeta', flat=True)
         choices = list(data_predmeti)
         pitanje.save_choices_for_question(anketa, choices)
+        if request.method == 'POST':
+            host_release_anketa_in_etar(request, anketa.id)
+            return redirect('email')
+
         return render(request, 'anketa/pregled_ankete.html', {
             'data_predmeti': data_predmeti,
-            'data_pitanje': pitanje.question_text
+            'data_pitanje': pitanje.question_text,
+            'anketa': anketa,
+            'pitanje': pitanje
             })
     else:
         return HttpResponse('Nevalidan tip ankete')
     
+@login_required(login_url='hostlogin')
+def host_release_anketa_in_etar(request, anketa_id):
+    anketa = get_object_or_404(Anketa, id=anketa_id)
+    if request.method == 'POST':
+        anketa.aktivnost = True
+        anketa.save()
+        print(reverse('email'))
+
 def mail_bkcodes_sender(request, number_of_codes, anketa):
     user = request.user
     email_recepient = user.email
@@ -201,14 +221,23 @@ def mail_bkcodes_sender(request, number_of_codes, anketa):
     )
     return render(request, 'anketa/email.html')
 
-
+@login_required(login_url='hostlogin')
 def success_mail(request):
     user = request.user
     email_recepient = user.email
-    alert_poruka = messages.success(request, f'Sifre za anketu su poslate na vasu {email_recepient} e-mail adresu.')
+    alert_poruka = messages.success(request, f'Sifre za Anketu su poslate na vasu {email_recepient} e-mail adresu.')
     return render(request, 'anketa/email.html', context={
         'alert_poruka': alert_poruka
     })
+
+def vote_submit(request, choices):
+    if request.method == 'POST':
+        choice_id = request.POST.get(['choice'])
+        for choice in choices:
+            choice = Izbori.objects.get(pk=choice_id)
+            choice.votes =+ 1
+            choice.save()
+            return HttpResponse('Bravo')
 
 
 @login_required(login_url='hostlogin')

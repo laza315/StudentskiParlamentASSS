@@ -1,5 +1,10 @@
 {% extends 'anketa/hostnavbar.html' %}
 
+{% block home %} 
+        <a class="nav-link active" href="{% url 'profile' %}"> Профил
+          <span class="visually-hidden">(current)</span>
+        </a>
+{% endblock %}
 
 {% block additional_login_out %}
     <a class="topright" id="login-out" href="{% url 'hostlogout' %}">

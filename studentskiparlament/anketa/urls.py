@@ -17,5 +17,5 @@ urlpatterns = [
     path('email/', views.success_mail, name='email'),
     path('pitanja/<int:anketa_id>', views.definisanje_pitanja, name='pitanja'),
     path('mojeankete/details/<int:pk>', views.survay_details, name="details"),
-    path('anketa/<int:anketa_id>/pitanje/<int:pitanje_id>/pregled/', views.query_za_izbor, name='pregled_ankete')
+    path('anketa/<int:anketa_id>/pitanje/<int:pitanje_id>/pregled/', views.query_za_izbor, name='pregled_ankete'),
 ]
