@@ -1,0 +1,45 @@
+{% comment %} {% extends "anketa/hostnavbar.html" %}
+
+
+
+{% block content %}
+
+  <div id="myModal" class="modal">
+    <div class="modal-dialog" style="margin: 20% auto;">
+      <div class="modal-content">
+      
+        <div class="modal-header">
+          <h4 class="modal-title">Modal Heading</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+              {% if anketa %} 
+              <div class="form-group">
+                  <form method="post" action="{% url 'code_checker' anketa.id %}">
+                      {% csrf_token %}
+                      <label class="form-label mt-4" for="codetext">Unesite Vas 6-digit kod</label>
+                      <input type="text" name="codetextfield" class="form-control is-valid" id="inputValid">
+  
+                      <div class="modal-footer">
+                          <button type="submit" class="btn btn-success">Dalje</button>
+                          <button type="button" class="btn btn-danger" data-dismiss="modal">Zatvori</button>
+                      </div>
+                  </form>
+              </div>
+              {%else%}
+                <p>Nesto je poslo lose </p>
+              {%endif%}
+        </div>
+  
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+
+{% endblock %} {% endcomment %}

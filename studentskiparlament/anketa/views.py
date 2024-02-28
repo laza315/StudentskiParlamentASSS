@@ -18,9 +18,9 @@ from . models import BackUpKod, Anketa, Pitanja, Izbori
 from topics.models import Smer, Profesori, Predmeti
 from django.utils.html import strip_tags
 from django.core.paginator import Paginator, Page
-import time
+from time import timezone, time
 from datetime import datetime
-
+import time
 
 
 #Create your views here.
@@ -244,6 +244,51 @@ def vote_submit(request, choices):
 def host_logout(request):
     logout(request)
     return redirect('hosthomepage')
+
+from django.core.paginator import Paginator
+
+def available_anketas_for_students(request):
+    alert_poruka = None
+    try:
+        live_ankete = Anketa.objects.filter(aktivnost=True).all()
+        anketa = live_ankete.order_by('-publish_date')
+        paginator = Paginator(anketa, 2)  
+        page_number = request.GET.get('page')
+        najnovije_ankete = paginator.get_page(page_number)
+        if not najnovije_ankete:
+            alert_poruka = messages.info(request, 'Nema aktivnih anketa u ovom trenutku')
+        
+    except ValueError:
+        alert_poruka = messages.info(request, 'Desila se greska.')
+    return render(request, 'anketa/studentviewforvoting.html', context={
+        'najnovije_ankete': najnovije_ankete,
+        'paginator': paginator,  
+        'alert_poruka': alert_poruka
+    })
+
+
+
+def can_students_code_vote_checker(request, anketa_id):
+    anketa = get_object_or_404(Anketa, id=anketa_id)
+    print(f'ID Ankete je: {anketa.id}')
+    
+    if request.method == 'POST':
+        backup_kod = request.POST.get('codetextfield')
+        print(backup_kod)    
+        try:
+            kod = BackUpKod.objects.get(code_value=backup_kod)
+            print('Kod postoji')
+            if kod.anketa == anketa:
+                print('Imate prava')
+            else:
+                print('Nemate prava')
+        except BackUpKod.DoesNotExist:
+            print('Ne postoji takav kod')  
+    else:
+        return HttpResponse('Not a POST method')
+    
+    return render(request, 'anketa/studentviewforvoting.html', context={'anketa': anketa})
+
 
 
 # def anketa_voting_activity(request, anketa_id):

@@ -22,7 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('host_view/', include('anketa.urls')),
     path("accounts/", include("django.contrib.auth.urls")),
-    path('', views.landing_page, name='landing_page'),
-
+    path('', views.available_anketas_for_students, name='available_anketas_for_students'),
+    path('voter_checker/<int:anketa_id>/', views.can_students_code_vote_checker, name='code_checker'),
 ]
 
