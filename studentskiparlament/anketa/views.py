@@ -271,25 +271,45 @@ def available_anketas_for_students(request):
 def can_students_code_vote_checker(request, anketa_id):
     anketa = get_object_or_404(Anketa, id=anketa_id)
     print(f'ID Ankete je: {anketa.id}')
-    
+
+    code_for_wrong_anketa_msg = None
+    code_doesnt_exist_message = None
+
     if request.method == 'POST':
         backup_kod = request.POST.get('codetextfield')
         print(backup_kod)    
         try:
             kod = BackUpKod.objects.get(code_value=backup_kod)
-            print('Kod postoji')
-            if kod.anketa == anketa:
-                print('Imate prava')
+            print(f'Kod {kod.code_value} postoji')
+            match_check = kod.anketa
+            if match_check == anketa:
+                print(f'Imate prava, jer je {match_check} = {anketa.pk}')
+                return redirect('vote', anketa.id)
             else:
                 print('Nemate prava')
+                code_for_wrong_anketa_msg = messages.warning(request, 'Ваш код не одговара овој Анкети, покушајте поново.')
+                return render (request, 'anketa/studentviewforvoting.html', context={
+                                'code_for_wrong_anketa_msg': code_for_wrong_anketa_msg})
         except BackUpKod.DoesNotExist:
-            print('Ne postoji takav kod')  
+            print('Ne postoji takav kod') 
+            code_doesnt_exist_message = messages.error(request, 'Ваш код је не постоји, покушајте поново.') 
     else:
         return HttpResponse('Not a POST method')
     
-    return render(request, 'anketa/studentviewforvoting.html', context={'anketa': anketa})
+    return render(request, 'anketa/studentviewforvoting.html', context={
+        'anketa': anketa,
+        'code_for_wrong_anketa_msg': code_for_wrong_anketa_msg,
+        'code_doesnt_exist_message': code_doesnt_exist_message,
+        })
 
-
+def vote(request, anketa_id):
+    anketa = Anketa.objects.get(pk=anketa_id)
+    anketa_name = anketa.naziv
+    success_message = messages.success(request,'Dobrodoso')  
+    return render(request, 'anketa/studentprosao.html', context={
+        'anketa_name': anketa_name,
+        'success_message': success_message
+        })
 
 # def anketa_voting_activity(request, anketa_id):
     

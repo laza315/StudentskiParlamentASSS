@@ -1,0 +1,14 @@
+<h1>Dobrodoso</h1>
+
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success"> 
+        <p>{{ message }}</p>
+    </div>
+    {% endfor %}
+{% endif %}
+
+{% if anketa_name %}
+    <p>{{anketa_name}}</p>
+{% endif %}

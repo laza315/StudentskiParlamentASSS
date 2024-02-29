@@ -5,8 +5,8 @@
 {% block content %}
 <center>
     <div class="card text-white bg-info" style="max-width: 40rem;">
-        <center>
-        <br></br>   
+        <br>
+        <center>  
         {% if najnovije_ankete %}
             {% for anketa in najnovije_ankete %}
                 <div class="card bg-secondary mb-3" style="max-width: 37rem;" style="padding-top: 20px">
@@ -90,6 +90,22 @@
 {% endfor %}
 
 
+<center>
+  <div class="card border-warning mb-3" style="max-width: 40rem;>
+    <div class="alert alert-error">
+        {% if messages %}
+            {% for message in messages %}
+            <div> 
+                <p>{{ message }}</p>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div> 
+   </div> 
+</center>
+
+
+
 <script>
     const popupbtns = document.querySelectorAll('.glasaj-btn');
     const modals = document.querySelectorAll('.modal');
@@ -124,3 +140,5 @@
     });
 </script>
 {% endblock %}
+
+
