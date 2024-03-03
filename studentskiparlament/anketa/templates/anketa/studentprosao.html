@@ -1,14 +1,60 @@
-<h1>Dobrodoso</h1>
+{% extends 'anketa/hostnavbar.html' %}
 
+{% block title %} Vote {% endblock %} 
 
-{% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-success"> 
-        <p>{{ message }}</p>
-    </div>
-    {% endfor %}
-{% endif %}
+{% block content %}
 
-{% if anketa_name %}
-    <p>{{anketa_name}}</p>
-{% endif %}
+    {% if success_message %}
+        <div class="alert alert-success">
+            <p>{{ success_message }}</p>
+        </div>
+    {% endif %}
+    <div class="row justify-content-center">
+        <center>
+            <div class="card bg-secondary mb-3" style="max-width: 40rem;">
+                {% if anketa %}
+                    {% if anketa_name %}
+                        <div class="card-header"><p>{{ anketa_name }}</p></div>
+                        <div class="card-body">
+                            {% if pitanje %}
+                              {% if kod %} 
+                                <form method="post" action="{% url 'vote' anketa.id kod.code_value %}">
+                                    {% csrf_token %}
+                                    <h4 class="card-title">
+                                        {{ pitanje.question_text }}
+                                    </h4>
+                                    {% if izbori %}
+                                        <div class="row">  
+                                            <div class="col-sm-6">
+                                                <div class="list-container" style="text-align: left">
+                                                    {% for choice in izbori %}
+                                                        <div style="text-align: left">
+                                                            <span style="display: inline-block;"><p>{{choice.choice_text}}</p></span>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div> 
+                                            </div> 
+                                            <div class="col-sm-6">
+                                                <div class="votes-container" style="text-align: left">
+                                                    {% for choice in izbori %}
+                                                        <select name="vote_{{ choice.id }}">
+                                                            {% for value, label in choice.VOTE_CHOICES %}
+                                                                <option value="{{ value }}">{{ label }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    <input type="submit" value="Glasaj">
+                                </form>
+                              {% endif %}  
+                            {% endif %}
+                        </div>  
+                    {% endif %}
+                {% endif %}
+            </div>  
+        </center>
+    </div>  
+{% endblock %}

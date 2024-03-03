@@ -3,6 +3,7 @@ from django.forms import ModelForm, DateTimeInput
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from .models import Anketa, BackUpKod, Pitanja, Izbori
+from django.utils import timezone
 
 # class LoginForm(AuthenticationForm):
 #     class Meta:
@@ -22,6 +23,13 @@ class LoginForm(AuthenticationForm):
 class AnketaForm(ModelForm):
     smer = forms.ChoiceField(choices=Anketa.SMER_CHOICES)
     tip_ankete = forms.ChoiceField(choices=Anketa.AnketaType.choices, label='Tip ankete') 
+
+    def clean_vreme_do(self):
+        vreme_do = self.cleaned_data.get('vreme_do')
+        if vreme_do <= timezone.now() + timezone.timedelta(minutes=15):
+            raise forms.ValidationError("Aktivnost mora biti duza od 10h")
+        return vreme_do
+    
     class Meta:
         model = Anketa
         fields = ['naziv', 'smer', 'tip_ankete', 'godina', 'broj_kodova', 'broj_pitanja', 'vreme_do', 'opis_ankete']
@@ -57,6 +65,13 @@ class PitanjaForm(ModelForm):
         widgets = {
             'question_text': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+class VotesForm(ModelForm):
+    votes = forms.ChoiceField(choices=Izbori.VOTE_CHOICES, label='Glasovi', initial='3') 
+    class Meta:
+        model = Izbori
+        fields = ['votes']
+        
 
 # class IzboriForm(ModelForm):
 #     izbori = forms.ChoiceField(choices=Izbori.VOTE_CHOICES)

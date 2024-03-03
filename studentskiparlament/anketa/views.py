@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .forms import AnketaForm, PitanjaForm
+from .forms import AnketaForm, PitanjaForm, VotesForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
@@ -16,6 +16,7 @@ from django.core.mail import send_mail
 from .code_generator import CodeGenerator
 from . models import BackUpKod, Anketa, Pitanja, Izbori
 from topics.models import Smer, Profesori, Predmeti
+from django.db.models import F
 from django.utils.html import strip_tags
 from django.core.paginator import Paginator, Page
 from time import timezone, time
@@ -280,11 +281,16 @@ def can_students_code_vote_checker(request, anketa_id):
         print(backup_kod)    
         try:
             kod = BackUpKod.objects.get(code_value=backup_kod)
-            print(f'Kod {kod.code_value} postoji')
+            print(f'Kod {kod.code_value} postoji. Da li je koriscen? {kod.is_used}')
             match_check = kod.anketa
-            if match_check == anketa:
+            if kod.is_used == False and match_check == anketa:
                 print(f'Imate prava, jer je {match_check} = {anketa.pk}')
-                return redirect('vote', anketa.id)
+                return redirect('vote', anketa.id, kod.code_value)
+            elif kod.is_used == True and match_check == anketa:
+                print(f'Imate prava, jer je {match_check} = {anketa.pk}')
+                code_is_already_used_msg = messages.warning(request, 'Ваш код је већ искоришћен.')
+                return render (request, 'anketa/studentviewforvoting.html', context={
+                                'code_is_already_used_msg': code_is_already_used_msg})
             else:
                 print('Nemate prava')
                 code_for_wrong_anketa_msg = messages.warning(request, 'Ваш код не одговара овој Анкети, покушајте поново.')
@@ -302,14 +308,49 @@ def can_students_code_vote_checker(request, anketa_id):
         'code_doesnt_exist_message': code_doesnt_exist_message,
         })
 
-def vote(request, anketa_id):
-    anketa = Anketa.objects.get(pk=anketa_id)
+def vote(request, anketa_id, kod_value):
+    anketa = get_object_or_404(Anketa, pk=anketa_id)
     anketa_name = anketa.naziv
-    success_message = messages.success(request,'Dobrodoso')  
+    broj_studenata = anketa.broj_kodova
+    pitanje = Pitanja.objects.filter(anketa__id=anketa.id).first()
+    kod = BackUpKod.objects.filter(code_value=kod_value).first()
+    print(kod.code_value)
+    print(kod_value)
+    if not pitanje:
+        raise Http404('Pitanje ne postoji')
+
+    izbori = Izbori.objects.filter(question=pitanje)
+
+    if request.method == 'POST':
+        for izbor in izbori:
+            choice_id = request.POST.get(f'vote_{izbor.id}')
+            if choice_id:
+                izbor.votes = int(choice_id)
+                print('proslo')
+                izbor.votes += int(choice_id)
+                izbor.save()
+                print('Glas je uspešno dodat!')
+                
+                        
+        return HttpResponse('Hvala na glasanju!')
+
+    form = VotesForm()
     return render(request, 'anketa/studentprosao.html', context={
+        'anketa': anketa,
         'anketa_name': anketa_name,
-        'success_message': success_message
-        })
+        'pitanje': pitanje,
+        'izbori': izbori,
+        'form': form,
+        'kod': kod
+    })
+
+
+
+
+
+
+
+
 
 # def anketa_voting_activity(request, anketa_id):
     
