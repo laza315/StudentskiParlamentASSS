@@ -313,9 +313,10 @@ def vote(request, anketa_id, kod_value):
     anketa_name = anketa.naziv
     broj_studenata = anketa.broj_kodova
     pitanje = Pitanja.objects.filter(anketa__id=anketa.id).first()
+    print(pitanje.question_text)
     kod = BackUpKod.objects.filter(code_value=kod_value).first()
+    print(f'Kod je: {kod_value}.')
     print(kod.code_value)
-    print(kod_value)
     if not pitanje:
         raise Http404('Pitanje ne postoji')
 

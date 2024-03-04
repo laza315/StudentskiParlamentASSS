@@ -17,39 +17,41 @@
                         <div class="card-header"><p>{{ anketa_name }}</p></div>
                         <div class="card-body">
                             {% if pitanje %}
-                              {% if kod %} 
-                                <form method="post" action="{% url 'vote' anketa.id kod.code_value %}">
-                                    {% csrf_token %}
                                     <h4 class="card-title">
                                         {{ pitanje.question_text }}
-                                    </h4>
-                                    {% if izbori %}
-                                        <div class="row">  
-                                            <div class="col-sm-6">
-                                                <div class="list-container" style="text-align: left">
-                                                    {% for choice in izbori %}
-                                                        <div style="text-align: left">
-                                                            <span style="display: inline-block;"><p>{{choice.choice_text}}</p></span>
-                                                        </div>
-                                                    {% endfor %}
+                                    </h4>                                                                                    
+                                    {% if kod %} 
+                                      <form method="post" action="{% url 'vote' anketa.id kod.code_value %}">
+                                        {% csrf_token %}
+                                        {% if izbori %}
+                                            <div class="row">  
+                                                <div class="col-sm-6">
+                                                    <div class="list-container" style="text-align: left">
+                                                        {% for choice in izbori %}
+                                                            <div style="text-align: left">
+                                                                <span style="display: inline-block;"><p>{{choice.choice_text}}</p></span>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div> 
                                                 </div> 
-                                            </div> 
-                                            <div class="col-sm-6">
-                                                <div class="votes-container" style="text-align: left">
-                                                    {% for choice in izbori %}
-                                                        <select name="vote_{{ choice.id }}">
-                                                            {% for value, label in choice.VOTE_CHOICES %}
-                                                                <option value="{{ value }}">{{ label }}</option>
-                                                            {% endfor %}
-                                                        </select>
-                                                    {% endfor %}
-                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="votes-container" style="text-align: left">
+                                                        {% for choice in izbori %}
+                                                            <select name="vote_{{ choice.id }}" style="margin-bottom: 22px;"> <!-- Adjust the padding-bottom value as needed -->
+                                                                {% for value, label in choice.VOTE_CHOICES %}
+                                                                    <option value="{{ value }}">{{ label }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>                                                
                                             </div>
-                                        </div>
-                                    {% endif %}
-                                    <input type="submit" value="Glasaj">
-                                </form>
-                              {% endif %}  
+                                        {% endif %}
+                                        <input type="submit" value="Glasaj">
+                                       </form>
+                                    {% endif %} 
+                            {% else  %}
+                                <p>nema</p>   
                             {% endif %}
                         </div>  
                     {% endif %}

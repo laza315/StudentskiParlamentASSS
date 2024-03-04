@@ -4,8 +4,6 @@ from .models import Anketa, BackUpKod, Pitanja, Izbori
 # Register your models here.
 admin.site.register(Anketa)
 admin.site.register(BackUpKod)
-# admin.site.register(Pitanja)
-# admin.site.register(Izbori)
 
 class ChoiceInLine(admin.TabularInline):
     model = (Izbori)
@@ -19,4 +17,3 @@ class QuestionAdmin(admin.ModelAdmin):
     inlines = [ChoiceInLine]
 
 admin.site.register(Pitanja, QuestionAdmin)
-# admin.site.register(Izbori)
