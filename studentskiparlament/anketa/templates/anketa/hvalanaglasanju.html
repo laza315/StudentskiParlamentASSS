@@ -1,0 +1,20 @@
+{% extends  'anketa/hostnavbar.html' %}
+
+{% block title %} Submitted {% endblock %} 
+
+
+
+{% block content %}
+
+<center>
+
+  <h3>Хвала на Вашем гласу! Ценимо то.</h3>
+
+    <div class='form-group'>
+        <label>Желите ли да оцените још неку Анкету?</label>
+        <a href="{% url 'available_anketas_for_students' %}" role='button' class='btn btn-primary'>Да, желим!</a>
+        <button class="btn btn-primary btn-block">Одустани</a>
+    </div>
+</center>
+{% endblock %}
+

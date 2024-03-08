@@ -102,22 +102,29 @@ class Pitanja(models.Model):
 
 class Izbori(models.Model):
     
-    VOTE_CHOICES = (
-        (1, 'Nisam zadovoljan'),
-        (2, 'Onako'),
-        (3, 'Zadovoljan'),
-        (4, 'Odlično'),
-    )
+    
     question =  models.ForeignKey(Pitanja, on_delete=models.CASCADE, null=False)
     choice_text = models.CharField(max_length=255)
-    votes = models.IntegerField(choices=VOTE_CHOICES, default=3)
-    kod = models.ForeignKey(BackUpKod, on_delete=models.SET_NULL, null=True) 
 
 
     def __str__(self):
         return self.choice_text
 
 
+
+class Vote(models.Model):
+
+    VOTE_CHOICES = (
+        (1, 'Nisam zadovoljan'),
+        (2, 'Onako'),
+        (3, 'Zadovoljan'),
+        (4, 'Odlično'),
+    )
+
+    choice = models.ForeignKey(Izbori, on_delete=models.CASCADE)
+    kod_value = models.ForeignKey(BackUpKod, on_delete=models.SET_NULL, null=True) 
+    votes = models.IntegerField(choices=VOTE_CHOICES, default='3')
+    
 
 
 

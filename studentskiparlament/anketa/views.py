@@ -14,7 +14,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.mail import send_mail
 from .code_generator import CodeGenerator
-from . models import BackUpKod, Anketa, Pitanja, Izbori
+from . models import BackUpKod, Anketa, Pitanja, Izbori, Vote
 from topics.models import Smer, Profesori, Predmeti
 from django.db.models import F
 from django.utils.html import strip_tags
@@ -246,7 +246,6 @@ def host_logout(request):
     logout(request)
     return redirect('hosthomepage')
 
-from django.core.paginator import Paginator
 
 def available_anketas_for_students(request):
     alert_poruka = None
@@ -288,7 +287,7 @@ def can_students_code_vote_checker(request, anketa_id):
                 return redirect('vote', anketa.id, kod.code_value)
             elif kod.is_used == True and match_check == anketa:
                 print(f'Imate prava, jer je {match_check} = {anketa.pk}')
-                code_is_already_used_msg = messages.warning(request, 'Ваш код је већ искоришћен.')
+                code_is_already_used_msg = messages.warning(request, 'Ваш код је искоришћен.')
                 return render (request, 'anketa/studentviewforvoting.html', context={
                                 'code_is_already_used_msg': code_is_already_used_msg})
             else:
@@ -308,35 +307,52 @@ def can_students_code_vote_checker(request, anketa_id):
         'code_doesnt_exist_message': code_doesnt_exist_message,
         })
 
+
+
+
 def vote(request, anketa_id, kod_value):
     anketa = get_object_or_404(Anketa, pk=anketa_id)
     anketa_name = anketa.naziv
-    broj_studenata = anketa.broj_kodova
     pitanje = Pitanja.objects.filter(anketa__id=anketa.id).first()
-    print(pitanje.question_text)
     kod = BackUpKod.objects.filter(code_value=kod_value).first()
-    print(f'Kod je: {kod_value}.')
-    print(kod.code_value)
+    
     if not pitanje:
         raise Http404('Pitanje ne postoji')
 
     izbori = Izbori.objects.filter(question=pitanje)
 
     if request.method == 'POST':
-        for izbor in izbori:
-            choice_id = request.POST.get(f'vote_{izbor.id}')
-            if choice_id:
-                izbor.votes = int(choice_id)
-                print('proslo')
-                izbor.votes += int(choice_id)
-                izbor.save()
-                print('Glas je uspešno dodat!')
-                
-                        
-        return HttpResponse('Hvala na glasanju!')
+        form = VotesForm(request.POST)
+        print(request.POST)
+        if form.is_valid():
+            print('forma je validna')
+            for izbor in izbori:
+                choice_id = request.POST.get(f'vote_{izbor.id}')
+                print(f'glas {choice_id} za {izbor.id}')
+        
+                try:
+                    izbor_obj = Izbori.objects.get(pk=izbor.id)
+                    print('nije default')
+                    vote = Vote(choice=izbor_obj, kod_value=kod, votes=choice_id)
+                    if kod.is_used == False:
+                        vote.save()
+                    else:
+                        print('Kod je iskoriscen')  
+                        messages.error(request, 'Код je већ искоришћен')  
+                except Izbori.DoesNotExist:
+                    print(f'Izbori with id {choice_id} does not exist.')
+            kod.is_used = True
+            kod.save()        
+             
+            messages.success(request, 'Успешно сте гласали!')
+            print(f'Da li je kod {kod.code_value} iskoriscen: {kod.is_used}')
+            return render(request, 'anketa/hvalanaglasanju.html', context={'form': form})
+        else:
+            messages.error(request, 'Došlo je do greške prilikom glasanja.')
+    else:
+        form = VotesForm()
 
-    form = VotesForm()
-    return render(request, 'anketa/studentprosao.html', context={
+    return render(request, 'anketa/studentglasa.html', context={
         'anketa': anketa,
         'anketa_name': anketa_name,
         'pitanje': pitanje,
@@ -344,7 +360,6 @@ def vote(request, anketa_id, kod_value):
         'form': form,
         'kod': kod
     })
-
 
 
 

@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm, DateTimeInput
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from .models import Anketa, BackUpKod, Pitanja, Izbori
+from .models import Anketa, BackUpKod, Pitanja, Vote
 from django.utils import timezone
 
 # class LoginForm(AuthenticationForm):
@@ -67,9 +67,9 @@ class PitanjaForm(ModelForm):
         }
 
 class VotesForm(ModelForm):
-    votes = forms.ChoiceField(choices=Izbori.VOTE_CHOICES, label='Glasovi', initial='3') 
+    votes = forms.ChoiceField(choices=Vote.VOTE_CHOICES, initial=3, required=False)
     class Meta:
-        model = Izbori
+        model = Vote
         fields = ['votes']
         
 

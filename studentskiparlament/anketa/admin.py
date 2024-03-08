@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Anketa, BackUpKod, Pitanja, Izbori
+from .models import Anketa, BackUpKod, Pitanja, Izbori, Vote
 
 # Register your models here.
 admin.site.register(Anketa)
@@ -17,3 +17,4 @@ class QuestionAdmin(admin.ModelAdmin):
     inlines = [ChoiceInLine]
 
 admin.site.register(Pitanja, QuestionAdmin)
+admin.site.register(Vote)
