@@ -1,0 +1,11 @@
+{% extends 'anketa/hostnavbar.html' %}
+
+
+{% block content %}
+   <p>{{ count_ankete }}</p>
+
+   {%for anketa in ankete %}
+       <p>{{anketa.vreme_do}}</p>
+   {% endfor %}
+
+{% endblock %}

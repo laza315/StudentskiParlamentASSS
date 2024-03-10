@@ -20,8 +20,10 @@ from django.db.models import F
 from django.utils.html import strip_tags
 from django.core.paginator import Paginator, Page
 from time import timezone, time
-from datetime import datetime
+from datetime import datetime, date
 import time
+from django.utils import timezone
+from django.utils.timezone import make_naive
 
 
 #Create your views here.
@@ -247,24 +249,31 @@ def host_logout(request):
     return redirect('hosthomepage')
 
 
-def available_anketas_for_students(request):
+def available_anketas_for_students(request, *args, **kwargs):
+    live_ankete = kwargs.get('ankete', [])
+    print("Broj aktivnih anketa:", len(live_ankete))
+    print("ID-jevi aktivnih anketa:", live_ankete)
+
     alert_poruka = None
     try:
-        live_ankete = Anketa.objects.filter(aktivnost=True).all()
-        anketa = live_ankete.order_by('-publish_date')
-        paginator = Paginator(anketa, 2)  
+        
+        najnovije_ankete = Anketa.objects.filter(id__in=live_ankete).order_by('-publish_date')
+        paginator = Paginator(najnovije_ankete, 2)  
         page_number = request.GET.get('page')
-        najnovije_ankete = paginator.get_page(page_number)
-        if not najnovije_ankete:
+        najnovije_stranice_anketa = paginator.get_page(page_number)
+        if not najnovije_stranice_anketa:
             alert_poruka = messages.info(request, 'Nema aktivnih anketa u ovom trenutku')
         
     except ValueError:
-        alert_poruka = messages.info(request, 'Desila se greska.')
+        alert_poruka = messages.info(request, 'Desila se greška.')
+    
     return render(request, 'anketa/studentviewforvoting.html', context={
-        'najnovije_ankete': najnovije_ankete,
+        'najnovije_stranice_anketa': najnovije_stranice_anketa,
         'paginator': paginator,  
         'alert_poruka': alert_poruka
     })
+
+
 
 
 
@@ -365,23 +374,106 @@ def vote(request, anketa_id, kod_value):
 
 
 
+def anketa_voting_activity(request):
+    ankete = Anketa.objects.all()
+    count_ankete = ankete.count()
+    print(f'Od ukupno {count_ankete} anketi')
+    live_ankete = 0
+    finished_ankete = 0
+    lista_anketa_koje_ostaju_live = []
+
+    today_date = timezone.now()
+    naive_today_date = make_naive(today_date)
+    tip = isinstance(today_date, date)
+    print(f'Danasnji datum je: {today_date} i tip je date?: {tip}')
+
+    for anketa in ankete:
+        duration_time = anketa.vreme_do
+        activity_monitoring = duration_time > timezone.make_aware(naive_today_date, timezone.get_current_timezone())
+        if anketa.aktivnost and activity_monitoring:  # Direktna provera istinitosti
+            live_ankete += 1
+            print(f'Ima {live_ankete} aktivnih anketi za studente, + {anketa.id}')
+            lista_anketa_koje_ostaju_live.append(anketa.id)
+        elif anketa.aktivnost and duration_time < timezone.make_aware(naive_today_date, timezone.get_current_timezone()):
+            anketa.aktivnost = False
+            anketa.save()        
+        else:
+            finished_ankete += 1
+            print(f'Za anketu {anketa.id} sumiraju se rezultati')
+
+    print(f'Live anketi ima: {live_ankete}')
+    print(f'Anketi za ocenjivanje ima: {finished_ankete} tj. gotove su')
+    print('Tip je date', isinstance(duration_time, date))
+
+    return redirect('available_anketas_for_students', ankete=lista_anketa_koje_ostaju_live)
 
 
-
-# def anketa_voting_activity(request, anketa_id):
+# @login_required(login_url='hostlogin')
+def rezultati(request):
+    obrada_rezultata_zavrsenih_anketi = Anketa.objects.filter(aktivnost=False).all()
+    for anketa in obrada_rezultata_zavrsenih_anketi:
+        anketa_id = anketa.id
+        num_of_students = anketa.broj_kodova
+        izbori = Izbori.objects.filter(question_id__anketa_id=anketa_id).values_list('id', flat=True)
+        print(f'Anketa sa ID: {anketa_id} je imala {num_of_students} studenta i ima izbore {izbori}')
+        for izbor in izbori:
+           glasovi_za_izbor = Vote.objects.filter(choice=izbor).values_list('votes', flat=True)
+           print(f'Glasovi za izbor {izbor}: {list(glasovi_za_izbor)} na anketi br {anketa_id}')
     
-#     anketa = get_object_or_404(Anketa, anketa_id=id)
-#     duration_time = anketa.vreme_do
+
+
+    return HttpResponse('Result')
+    
+
+    
+# def anketa_voting_activity(request):
+    
+#     ankete = Anketa.objects.all()
+#     count_ankete = ankete.count()
+#     print(f'Od ukupno {count_ankete} anketi')
+#     live_ankete = 0
+#     finished_ankete = 0
 
 #     anketa_activity = True
 
-#     today_date = datetime.now()
-#     dt_string_frame = today_date.strftime("%d/%m/%Y %H:%M:%S")
-
-#     while anketa_activity:
-#         if duration_time < dt_string_frame:
-#             print("aktivna")
+#     today_date = timezone.now()
+#     naive_today_date = make_naive(today_date)
+#     tip = isinstance(today_date, date)
+#     print(f'Danasnji datum je: {today_date} i tip je date?: {tip}')
+    
+#     for anketa in ankete:
+#         duration_time = anketa.vreme_do
+#         print('Tip je date', isinstance(duration_time, date))
+#         if anketa.aktivnost == True:
+#             activity_monitoring = duration_time < timezone.make_aware(naive_today_date, timezone.get_current_timezone())
+#             if activity_monitoring:
+#                 while activity_monitoring:
+#                     anketa_activity = True
+#                     print(f'Vreme isteka ankete ID: {anketa.id} {duration_time} je manje od danasnjeg dana {today_date}. Anketa bi trebala da bude live')
+#                     # ovde zelim da za ankete koje su Aktivnost = True i vreme_do(duration_time) manje od danasnjeg dana prikazujem studentima  available_anketas_for_students() metodom
+#                     #  npr return redirect(available_anketas_for_students(anketa.id))
+#                     if not activity_monitoring:
+#                         anketa_activity == False
+#                         anketa.aktivnost == False
+#                         anketa.save()
+#             live_ankete += 1
 #         else:
-#             anketa_activity = False
-#             raise anketa.DoesNotExist
+#             finished_ankete += 1
+#             # za ankete koje su finished zelim da host-u prikazem rezultate
+#             # pozvajuci result() metodu
+    
+#     print(f'Live anketi ima: {live_ankete}')
+#     print(f'Anketi za ocenjivanje ima: {finished_ankete}')
 
+
+
+#     lista_anketa_koje_ostaju_live = []
+
+    
+
+    
+#     return render(request, 'anketa/anketa_voting_activity', context={
+#         'ankete': ankete,
+#         'count_ankete': count_ankete,
+#         # 'duration_time': duration_time
+#         })

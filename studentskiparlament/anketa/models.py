@@ -115,10 +115,10 @@ class Izbori(models.Model):
 class Vote(models.Model):
 
     VOTE_CHOICES = (
-        (1, 'Nisam zadovoljan'),
-        (2, 'Onako'),
-        (3, 'Zadovoljan'),
-        (4, 'Odlično'),
+        (1, 'Нисам задовољан'),
+        (2, 'Oнако'),
+        (3, 'Задовољан'),
+        (4, 'Одлично'),
     )
 
     choice = models.ForeignKey(Izbori, on_delete=models.CASCADE)
