@@ -4,14 +4,14 @@
 
 
 {% block home %} 
-     <a class="nav-link active" href="{% url 'hosthomepage' %}"> Почетна
+     <a class="nav-link active" href="{% url 'hosthomepage' %}"> <i class="fa-solid fa-house fa-1x"></i> Почетна
         <span class="visually-hidden">(current)</span>
       </a>
 {% endblock %}
 
 {% block additional_login_out %}
     <a class="topright" id="login-out" href="{% url 'hostlogout' %}">
-      <i class="fa-solid fa-user"></i> Odjavi se
+      <i class="fa-solid fa-user fa-1x"></i> Odjavi se
     </a>
 {% endblock %} 
 

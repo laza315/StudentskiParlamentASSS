@@ -24,6 +24,8 @@ from datetime import datetime, date
 import time
 from django.utils import timezone
 from django.utils.timezone import make_naive
+from django.db.models import Count, Sum
+
 
 
 #Create your views here.
@@ -408,21 +410,47 @@ def anketa_voting_activity(request):
     return redirect('available_anketas_for_students', ankete=lista_anketa_koje_ostaju_live)
 
 
-# @login_required(login_url='hostlogin')
-def rezultati(request):
-    obrada_rezultata_zavrsenih_anketi = Anketa.objects.filter(aktivnost=False).all()
+
+
+
+@login_required(login_url='hostlogin')
+def rezultati(request, pk):
+    user = User.objects.get(pk=pk)
+    obrada_rezultata_zavrsenih_anketi = Anketa.objects.filter(host_id=user, aktivnost=False).all()
+    
+    context = {'user': user, 'obrada_rezultata_zavrsenih_anketi': []}
+    
     for anketa in obrada_rezultata_zavrsenih_anketi:
         anketa_id = anketa.id
+        pitanje = Pitanja.objects.filter(anketa=anketa).first() 
+        if pitanje: 
+            print(pitanje.question_text)
+        else:
+            print("Nema pitanja za ovu anketu.")
+        
         num_of_students = anketa.broj_kodova
-        izbori = Izbori.objects.filter(question_id__anketa_id=anketa_id).values_list('id', flat=True)
-        print(f'Anketa sa ID: {anketa_id} je imala {num_of_students} studenta i ima izbore {izbori}')
+        
+        izbori = Izbori.objects.filter(question__anketa=anketa).annotate(total_votes=Sum('vote__votes'))
+        
+        print(f'Anketa sa ID: {anketa_id} ima {num_of_students} studenta.')
         for izbor in izbori:
-           glasovi_za_izbor = Vote.objects.filter(choice=izbor).values_list('votes', flat=True)
-           print(f'Glasovi za izbor {izbor}: {list(glasovi_za_izbor)} na anketi br {anketa_id}')
-    
+            glasovi_za_izbor = Vote.objects.filter(choice=izbor).values_list('votes', flat=True)
+            if glasovi_za_izbor and num_of_students > 0:
+                izbor.prosek = izbor.total_votes / float(num_of_students)
+                print(f'Ocene za izbor-ID: {izbor.id} su {list(glasovi_za_izbor)} na anketi ID {anketa_id}. '
+                      f'Ima {izbor.total_votes} glasa - Prosek: {izbor.prosek}.')
+            else:
+                print(f'Glasovi za izbor {izbor.id}: [Nema glasova] na anketi br {anketa_id}. '
+                      f'Ima 0 glasova - Prosek: N/A')
+            
+        context['obrada_rezultata_zavrsenih_anketi'].append({
+            'anketa': anketa,
+            'pitanje': pitanje,
+            'izbori': izbori,
+            'glasovi_za_izbor': list(glasovi_za_izbor)
+            })
 
-
-    return HttpResponse('Result')
+    return render(request, 'anketa/rezultati.html', context=context)
     
 
     

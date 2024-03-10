@@ -4,21 +4,28 @@
 
 
 {% block home %} 
-    <a class="nav-link active" href="{% url 'hosthomepage' %}">Почетна
+    <a class="nav-link active" href="{% url 'hosthomepage' %}"><i class="fa-solid fa-house fa-1x"></i> Почетна
         <span class="visually-hidden">(current)</span>
     </a>
 {% endblock %}
 
 {% block user_profile %}
     <a class="nav-link active" href="{% url 'mojeankete' request.user.id %}">
-      <i class="fa-solid fa-user"></i> Моје Анкете
+        <i class="fa-sharp fa-solid fa-folder-open fa-1x"></i> Моје Анкете
+      <span class="visually-hidden">(current)</span>
+    </a>
+{% endblock %}
+
+{% block rezultati %}
+    <a class="nav-link active" href="{% url 'rezultati' request.user.id %}">
+        <i class="fa-solid fa-square-poll-vertical fa-1x"></i> Rezultati
       <span class="visually-hidden">(current)</span>
     </a>
 {% endblock %}
 
 {% block additional_login_out %}
     <a class="topright" id="login-out" href="{% url 'hostlogout' %}"
-      ><i class="fa-solid fa-user"></i> Одјави сe
+      ><i class="fa-solid fa-user fa-1x"></i> Одјави сe
     </a>
 {% endblock %} 
 
@@ -52,6 +59,7 @@
                                 <h1 class="text-center">Добродошао, {{user.first_name}} !</h1>
                                 <div class="text-center">
                                     <a class="btn btn-primary btn-block" id='napravianketu' href="{% url 'hostmakesanketa' %}">Направи Анкету!</a>
+                                    <i class="fa-regular fa-clipboard fa-2x"></i>
                                 </div>
                             </div>
                         </div>

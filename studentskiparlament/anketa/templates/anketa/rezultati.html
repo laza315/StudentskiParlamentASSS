@@ -1,0 +1,49 @@
+{% extends "anketa/hostnavbar.html" %}
+
+{% block title %} Rezultati {% endblock %} 
+
+{% block home %} 
+    <a class="nav-link active" href="{% url 'hosthomepage' %}"> <i class="fa-solid fa-house fa-1x"></i> Почетна
+        <span class="visually-hidden">(current)</span>
+    </a>
+{% endblock %}
+
+{% block additional_login_out %}
+    <a class="topright" id="login-out" href="{% url 'hostlogout' %}"
+      ><i class="fa-solid fa-user fa-1x"></i> Odjavi se
+    </a>
+{% endblock %} 
+
+{% block content %}
+<center>
+    <h5>Dobrodošli, {{ user.username }}</h5>
+    <div class="card border-primary mb-3" style="max-width: 50rem; margin:">
+        <div class="card-header">
+            <strong><h2>{{ anketa_details.naziv }}</h2></strong>
+        </div>
+       <div class="card-body">    
+        {% if obrada_rezultata_zavrsenih_anketi %}
+            {% for anketa_info in obrada_rezultata_zavrsenih_anketi %}
+                <h3>Anketa broj: {{ anketa_info.anketa.id }}</h3>
+                {% if anketa_info.pitanje %}
+                    <p class="card-text">{{ anketa_info.pitanje.question_text }}</p>
+                {% else %}
+                    <p class="card-text">Nema pitanja za ovu anketu.</p>
+                {% endif %}
+
+                <p>Broj studenata koji su učestvovali: {{ anketa_info.anketa.broj_kodova }}</p>
+                <ul class='list-group'>
+                    {% for izbor in anketa_info.izbori %}
+                        <li class="list-group-item" style="text-align: center;"> 
+                            Ukupno sakupljenih {{ izbor.total_votes }} ocena - Prosecna ocena za: {{ izbor.choice_text }} je: {{ izbor.prosek|floatformat:"2" }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        {% else %}
+            <p>Trenutno nema završenih anketa.</p>
+        {% endif %}
+        </div>
+    </div>    
+</center>
+{% endblock %}
