@@ -7,8 +7,8 @@
     <div class="card text-white bg-info" style="max-width: 40rem;">
         <br>
         <center>  
-        {% if najnovije_ankete %}
-            {% for anketa in najnovije_ankete %}
+        {% if najnovije_stranice_anketa %}
+            {% for anketa in najnovije_stranice_anketa %}
                 <div class="card bg-secondary mb-3" style="max-width: 37rem;" style="padding-top: 20px">
                     <div class="card-header mt-auto d-flex justify-content-center">Анкета за {{ anketa.get_tip_ankete_display }} на {{ anketa.smer }} смеру и {{ anketa.godina }} години</div>
                     <div class="card-body">
@@ -26,21 +26,21 @@
             {% if paginator.num_pages > 1 %}
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
-                        {% if najnovije_ankete.has_previous %}
+                        {% if najnovije_stranice_anketa.has_previous %}
                             <li class="page-item">
                                 <a class="page-link" href="?page=1">&laquo;</a>
                             </li>
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ najnovije_ankete.previous_page_number }}">{{ najnovije_ankete.previous_page_number }}</a>
+                                <a class="page-link" href="?page={{ najnovije_stranice_anketa.previous_page_number }}">{{ najnovije_stranice_anketa.previous_page_number }}</a>
                             </li>
                         {% endif %}
-                        <li class="page-item active"><a class="page-link" href="?page={{ najnovije_ankete.number }}">{{ najnovije_ankete.number }}</a></li>
-                        {% if najnovije_ankete.has_next %}
+                        <li class="page-item active"><a class="page-link" href="?page={{ najnovije_stranice_anketa.number }}">{{ najnovije_stranice_anketa.number }}</a></li>
+                        {% if najnovije_stranice_anketa.has_next %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ najnovije_ankete.next_page_number }}">{{ najnovije_ankete.next_page_number }}</a>
+                                <a class="page-link" href="?page={{ najnovije_stranice_anketa.next_page_number }}">{{ najnovije_stranice_anketa.next_page_number }}</a>
                             </li>
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ najnovije_ankete.paginator.num_pages }}">&raquo;</a>
+                                <a class="page-link" href="?page={{ najnovije_stranice_anketa.paginator.num_pages }}">&raquo;</a>
                             </li>
                         {% endif %}
                     </ul>
@@ -58,13 +58,13 @@
     </div>
 </center>
 
-{% for anketa in najnovije_ankete %}
+{% for anketa in najnovije_stranice_anketa %}
  <div id="myModal{{ anketa.id }}" class="modal">
   <div class="modal-dialog" style="margin: 20% auto;">
     <div class="modal-content">
     
       <div class="modal-header">
-        <div class="card-header mt-auto d-flex justify-content-center" style="text-align: right">Код za Приступ {{ anketa.id }}</div>
+        <div class="card-header mt-auto d-flex justify-content-center" style="text-align: right">Код за Приступ {{ anketa.id }}</div>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
       <center>
@@ -78,7 +78,7 @@
 
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success">Потврди</button>
-                        <a href={%url 'available_anketas_for_students' %} type="button" class="btn btn-danger" data-dismiss="modal">Одустани</a>
+                        <a href={% url 'available_anketas_for_students' %} type="button" class="btn btn-danger" data-dismiss="modal">Одустани</a>
                     </div>
                 </form>
             </div>
@@ -140,5 +140,3 @@
     });
 </script>
 {% endblock %}
-
-

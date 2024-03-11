@@ -35,7 +35,10 @@
                 <ul class='list-group'>
                     {% for izbor in anketa_info.izbori %}
                         <li class="list-group-item" style="text-align: center;"> 
-                            Ukupno sakupljenih {{ izbor.total_votes }} ocena - Prosecna ocena za: {{ izbor.choice_text }} je: {{ izbor.prosek|floatformat:"2" }}
+                            Suma {{ izbor.total_votes }} ocena - Prosecna ocena za: {{ izbor.choice_text }} je:
+                            <div class="progress">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">{{ izbor.prosek|floatformat:"2" }}</div>
+                            </div> 
                         </li>
                     {% endfor %}
                 </ul>

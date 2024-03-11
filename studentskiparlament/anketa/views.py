@@ -251,15 +251,18 @@ def host_logout(request):
     return redirect('hosthomepage')
 
 
-def available_anketas_for_students(request, *args, **kwargs):
-    live_ankete = kwargs.get('ankete', [])
-    print("Broj aktivnih anketa:", len(live_ankete))
-    print("ID-jevi aktivnih anketa:", live_ankete)
+def available_anketas_for_students(request):
+    live_ankete_ids = request.session.get('live_ankete', [])
+    print("Broj aktivnih anketa:", len(live_ankete_ids))
+    print("ID-jevi aktivnih anketa:", live_ankete_ids)
 
     alert_poruka = None
+    najnovije_ankete = []  
     try:
-        
-        najnovije_ankete = Anketa.objects.filter(id__in=live_ankete).order_by('-publish_date')
+        for anketa_id in live_ankete_ids:
+            print(anketa_id)
+            najnovije_ankete.extend(Anketa.objects.filter(id=anketa_id).all())  
+
         paginator = Paginator(najnovije_ankete, 2)  
         page_number = request.GET.get('page')
         najnovije_stranice_anketa = paginator.get_page(page_number)
@@ -270,6 +273,7 @@ def available_anketas_for_students(request, *args, **kwargs):
         alert_poruka = messages.info(request, 'Desila se greška.')
     
     return render(request, 'anketa/studentviewforvoting.html', context={
+        'najnovije_ankete': najnovije_ankete,
         'najnovije_stranice_anketa': najnovije_stranice_anketa,
         'paginator': paginator,  
         'alert_poruka': alert_poruka
@@ -392,7 +396,7 @@ def anketa_voting_activity(request):
     for anketa in ankete:
         duration_time = anketa.vreme_do
         activity_monitoring = duration_time > timezone.make_aware(naive_today_date, timezone.get_current_timezone())
-        if anketa.aktivnost and activity_monitoring:  # Direktna provera istinitosti
+        if anketa.aktivnost and activity_monitoring:  
             live_ankete += 1
             print(f'Ima {live_ankete} aktivnih anketi za studente, + {anketa.id}')
             lista_anketa_koje_ostaju_live.append(anketa.id)
@@ -407,8 +411,8 @@ def anketa_voting_activity(request):
     print(f'Anketi za ocenjivanje ima: {finished_ankete} tj. gotove su')
     print('Tip je date', isinstance(duration_time, date))
 
-    return redirect('available_anketas_for_students', ankete=lista_anketa_koje_ostaju_live)
-
+    request.session['live_ankete'] = lista_anketa_koje_ostaju_live
+    return redirect('available_anketas_for_students')
 
 
 
