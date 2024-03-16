@@ -26,5 +26,5 @@ urlpatterns = [
     path('voter_checker/<int:anketa_id>/', views.can_students_code_vote_checker, name='code_checker'),
     path('vote/<int:anketa_id>/<int:kod_value>/', views.vote, name='vote'),
     path('', views.anketa_voting_activity, name='anketa_voting_activity'),
-
+    path('api/', include('anketa.API.urls'))
 ]

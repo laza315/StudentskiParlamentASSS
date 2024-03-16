@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .forms import AnketaForm, PitanjaForm, VotesForm
@@ -8,23 +8,22 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect, reverse
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponse, Http404
 from django.core.mail import send_mail
 from .code_generator import CodeGenerator
 from . models import BackUpKod, Anketa, Pitanja, Izbori, Vote
-from topics.models import Smer, Profesori, Predmeti
+from topics.models import Profesori, Predmeti
 from django.db.models import F
 from django.utils.html import strip_tags
-from django.core.paginator import Paginator, Page
+from django.core.paginator import Paginator
 from time import timezone, time
-from datetime import datetime, date
+from datetime import date
 import time
 from django.utils import timezone
 from django.utils.timezone import make_naive
-from django.db.models import Count, Sum
+from django.db.models import Sum
 
 
 
@@ -458,54 +457,3 @@ def rezultati(request, pk):
     
 
     
-# def anketa_voting_activity(request):
-    
-#     ankete = Anketa.objects.all()
-#     count_ankete = ankete.count()
-#     print(f'Od ukupno {count_ankete} anketi')
-#     live_ankete = 0
-#     finished_ankete = 0
-
-#     anketa_activity = True
-
-#     today_date = timezone.now()
-#     naive_today_date = make_naive(today_date)
-#     tip = isinstance(today_date, date)
-#     print(f'Danasnji datum je: {today_date} i tip je date?: {tip}')
-    
-#     for anketa in ankete:
-#         duration_time = anketa.vreme_do
-#         print('Tip je date', isinstance(duration_time, date))
-#         if anketa.aktivnost == True:
-#             activity_monitoring = duration_time < timezone.make_aware(naive_today_date, timezone.get_current_timezone())
-#             if activity_monitoring:
-#                 while activity_monitoring:
-#                     anketa_activity = True
-#                     print(f'Vreme isteka ankete ID: {anketa.id} {duration_time} je manje od danasnjeg dana {today_date}. Anketa bi trebala da bude live')
-#                     # ovde zelim da za ankete koje su Aktivnost = True i vreme_do(duration_time) manje od danasnjeg dana prikazujem studentima  available_anketas_for_students() metodom
-#                     #  npr return redirect(available_anketas_for_students(anketa.id))
-#                     if not activity_monitoring:
-#                         anketa_activity == False
-#                         anketa.aktivnost == False
-#                         anketa.save()
-#             live_ankete += 1
-#         else:
-#             finished_ankete += 1
-#             # za ankete koje su finished zelim da host-u prikazem rezultate
-#             # pozvajuci result() metodu
-    
-#     print(f'Live anketi ima: {live_ankete}')
-#     print(f'Anketi za ocenjivanje ima: {finished_ankete}')
-
-
-
-#     lista_anketa_koje_ostaju_live = []
-
-    
-
-    
-#     return render(request, 'anketa/anketa_voting_activity', context={
-#         'ankete': ankete,
-#         'count_ankete': count_ankete,
-#         # 'duration_time': duration_time
-#         })
