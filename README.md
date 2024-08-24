@@ -1,4 +1,7 @@
-Concept and Purpose of the Work
+Studentski Parlament Full stack Service
+
+Overview - Concept and Purpose of the Work
+
 The initial idea behind the development of this system was to create functional software for surveying students at our faculty. The goal was to ease the process for the student parliament representatives and their presidents to track the satisfaction and dissatisfaction of students on specific topics addressed daily within our departmental lectures. The platform aims to provide actionable results that our esteemed faculty members will consider and utilize as guidelines for further enhancing the quality of teaching and study programs.
 The application consists of three main parts. The first part is intended for unregistered users and does not require system login as it is an open student site. Its purpose is to provide opinions in line with their preferences on a given topic, provided the user has a user code. If not, they can request it from their parliament.
 
