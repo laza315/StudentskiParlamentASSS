@@ -9,7 +9,7 @@ The second part is intended for all registered members of the Parliament and req
 The third part is administrative and can only be accessed by administrators - System Admins. The administrative section is divided into two parts: forum administration and user administration. Surveys on the forum are structured hierarchically and follow the principle of Newest First for public surveys. Surveys are at the top level of the hierarchy, containing questions processed through 1. The last level consists of options (lists of professors and subjects) representing entities for evaluation. To achieve such functionality, user types, application security, database, and functionality need to be defined.
 
 Algorithm
-![alt text](image.png)
+![alt text](algo-flo.png)
 
 Database
-![alt text](Screenshot_1.png)
+![alt text](db.png)
