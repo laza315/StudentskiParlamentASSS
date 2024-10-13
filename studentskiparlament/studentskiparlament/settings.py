@@ -21,14 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-uw+o&7r3slyle=+vg@5sn$i^1h)40ozt6a8y02if8^mz0l7hb^'
+SECRET_KEY = os.environ.get('SECRET_KEY_STUDENTSKI_PARLAMENT')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'studentskiparlament.asss@gmail.com'
-EMAIL_HOST_PASSWORD = 'gwxv gpry hhej ntbs'
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 
@@ -91,7 +91,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'studentskiparlamentdb',
         'USER': 'lazar',
-        'PASSWORD': 'Bubnjar231%1414',
+        'PASSWORD': os.environ.get('PASSWORD_STUDENTSKI_PARLAMENT'),
         'HOST': 'localhost',
         'PORT': 5433     
     }
